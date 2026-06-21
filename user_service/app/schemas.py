@@ -31,3 +31,6 @@ class UserUpdate(BaseModel):
     name: Optional[str] = Field(default=None, min_length=2, max_length=100)
     city_id: Optional[int] = Field(default=None, gt=0)
     password: Optional[str] = Field(default=None, min_length=6, max_length=50)
+
+class UserStatusUpdate(BaseModel):
+    is_active: bool

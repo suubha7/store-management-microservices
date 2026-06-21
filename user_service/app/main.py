@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.routes.user_routes import user_router
+from app.routes.admin_router import admin_router
 from app.database import Base, engine
 
 Base.metadata.create_all(bind=engine)
@@ -13,3 +14,4 @@ def read_root():
     }
 
 app.include_router(user_router)
+app.include_router(admin_router)

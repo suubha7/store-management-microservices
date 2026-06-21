@@ -145,11 +145,11 @@ Completed:
 * User update
 * Pydantic validation
 * Swagger API documentation
+* Admin APIs
 
 Next:
 
 * JWT authentication
-* Admin APIs
 * Catalog Service
 * Warehouse Service
 * Order Service

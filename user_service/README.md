@@ -14,11 +14,16 @@ It manages user account registration and login for two roles:
 * Password hashing using bcrypt
 * User login
 * Password verification
-* User profile
-* User Update
+* Get user by ID
+* Update user profile
+* Get all users for admin
+* Get user by ID for admin
+* Activate or deactivate a user account
+* Delete a user account
 * SQLite database integration
 * Pydantic request validation
 * Swagger API documentation
+
 
 ## Tech Stack
 
@@ -35,16 +40,31 @@ It manages user account registration and login for two roles:
 ```text
 users-service/
 ├── app/
+│   ├── __init__.py
 │   ├── main.py
 │   ├── database.py
-│   ├── models.py
+│   ├── model.py
 │   ├── schemas.py
 │   ├── auth.py
+│   ├── dependencies.py
 │   └── routers/
-│       └── user_router.py
-├── requirements.txt
-└── users.db
+│       ├── __init__.py
+│       ├── user_router.py
+│       └── admin_router.py
+├── .gitignore
+├── pyproject.toml
+├── uv.lock
+└── README.md
 ```
+
+### Local Files Not Pushed to GitHub
+
+```text
+.venv/
+users.db
+__pycache__/
+```
+
 
 ## User Database Fields
 
@@ -64,7 +84,7 @@ users-service/
 Clone the repository and move into the project folder.
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/suubha7/store-management-microservices.git
 cd users-service
 ```
 
