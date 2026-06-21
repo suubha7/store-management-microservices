@@ -3,12 +3,12 @@ from app.auth import hash_password, verify_password
 from app.database import get_db
 from sqlalchemy.orm import Session 
 from app.model import User
-from app.schemas import UserRegister, UserLogin
+from app.schemas import UserRegister, UserLogin, UserResponse, UserUpdate
 
 
 user_router = APIRouter(prefix="/user", tags=["User APIs"])
 
-@user_router.post("/register", status_code=status.HTTP_201_CREATED)
+@user_router.post("/register",response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def register_user(user_data: UserRegister, db: Session = Depends(get_db)):
 
     existing_user = db.query(User).filter(User.email == user_data.email).first()
@@ -64,3 +64,34 @@ def login_user(login_data: UserLogin, db: Session = Depends(get_db)):
         "role": user.role
     }
 
+@user_router.get("/me/{user_id}", response_model=UserResponse)
+def get_user_by_id(user_id: int, db: Session= Depends(get_db)):
+
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    
+    return user
+
+@user_router.put("/update/{user_id}", response_model= UserResponse, status_code=status.HTTP_200_OK)
+def update_user_by_id(user_id: int, user_data: UserUpdate, db: Session = Depends(get_db)):
+
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not Found")
+    
+    if user_data.name is not None:
+        user.name = user_data.name
+
+    if user_data.city_id is not None:
+        user.city_id = user_data.city_id
+
+    if user_data.password is not None:
+        user.hashed_password = hash_password(user_data.password)
+
+    db.commit() 
+    db.refresh(user)
+
+    return user

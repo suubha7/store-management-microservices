@@ -14,6 +14,8 @@ It manages user account registration and login for two roles:
 * Password hashing using bcrypt
 * User login
 * Password verification
+* User profile
+* User Update
 * SQLite database integration
 * Pydantic request validation
 * Swagger API documentation
@@ -159,7 +161,30 @@ During login:
 ## Run Tests Manually
 
 1. Open Swagger UI at `http://127.0.0.1:8001/docs`.
-2. Test `POST /users/register`.
-3. Test `POST /users/login` using the same email and password.
-4. Try registering the same email again and confirm that the API rejects it.
-5. Try login with an incorrect password and confirm that the API rejects it.
+2. Test `POST /users/register` with a new email.
+3. Test `POST /users/login` using the same registered email and password.
+4. Test `GET /users/{user_id}` using the user ID returned after registration.
+5. Test `PUT /users/{user_id}` and update one or more fields.
+
+   Example request:
+
+   ```json
+   {
+     "name": "Updated User Name",
+     "city_id": 2
+   }
+   ```
+
+6. Test `GET /users/{user_id}` again and confirm the updated data is returned.
+7. Test password update using `PUT /users/{user_id}`.
+
+   ```json
+   {
+     "password": "NewPassword123"
+   }
+   ```
+
+8. Test `POST /users/login` with the old password and confirm that the API rejects it.
+9. Test `POST /users/login` with the new password and confirm that login succeeds.
+10. Try registering the same email again and confirm that the API rejects it.
+11. Try login with an incorrect password and confirm that the API rejects it.

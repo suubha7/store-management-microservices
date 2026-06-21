@@ -141,6 +141,8 @@ Completed:
 * User registration
 * Password hashing
 * User login
+* User profile
+* User update
 * Pydantic validation
 * Swagger API documentation
 
