@@ -38,14 +38,25 @@ Status: Completed.
 
 ### Catalog Service
 
-Manages city-based catalogs and products.
+Manages cities, categories, products, and product availability by city.
 
-* Cities
-* Catalogs
-* Products
-* Product prices
+* City management
+* Product category management
+* Product catalog management
+* Product availability for each city
 
-Status: Planned.
+Status: In progress.
+
+Current work completed:
+
+* Catalog Service project setup
+* SQLite database connection
+* City table
+* Category table
+* Product table
+* City product availability table
+* FastAPI service running on port `8002`
+
 
 ### Warehouse Service
 
@@ -154,12 +165,17 @@ Completed:
 * User deletion
 * Pydantic validation
 * Swagger API documentation
+* Catalog Service project setup
+* Catalog Service SQLite database connection
+* Catalog Service database models: City, Category, Product, and CityProduct
+* Catalog Service running on port `8002`
 
 Next:
 
-* Catalog Service
+* Catalog Service schemas and APIs
 * Warehouse Service
 * Order Service
 * API Gateway
 * PostgreSQL database container
 * Docker containers and Docker Compose setup
+
