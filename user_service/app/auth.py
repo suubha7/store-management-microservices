@@ -1,4 +1,10 @@
 from pwdlib import PasswordHash
+from jose import jwt, JWTError
+from datetime import datetime, timezone, timedelta
+
+SECRET_KEY = "store-management-users-service-secret-key-2026"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 password_hash = PasswordHash.recommended()
 
@@ -15,3 +21,21 @@ def verify_password(
         plain_password,
         hashed_password
     )
+
+def create_access_token(user_id: int, role: str):
+
+    expiry_time = datetime.now(timezone.utc) + timedelta(minutes= ACCESS_TOKEN_EXPIRE_MINUTES)
+
+    payload = {
+        "sub": str(user_id),
+        "role": role,
+        "exp": expiry_time
+    }
+
+    access_token = jwt.encode(
+        payload,
+        SECRET_KEY,
+        algorithm=ALGORITHM
+    )
+
+    return access_token

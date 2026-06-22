@@ -3,9 +3,10 @@ from sqlalchemy.orm import Session
 from app.model import User
 from app.database import get_db
 from app.schemas import UserResponse, UserStatusUpdate
+from app.dependencies import require_admin
 
 
-admin_router = APIRouter(prefix="/admin", tags=["Admin APIs"])
+admin_router = APIRouter(prefix="/admin", tags=["Admin APIs"], dependencies= [Depends(require_admin)])
 
 @admin_router.get("/users", response_model=list[UserResponse])
 def all_users(db: Session = Depends(get_db)):
@@ -20,7 +21,7 @@ def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
 
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     
     return user
 
@@ -30,7 +31,7 @@ def update_user_status_by_id(user_id: int, user_status: UserStatusUpdate, db: Se
     user = db.query(User).filter(User.id == user_id).first()
 
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     user.is_active = user_status.is_active
     db.commit() 
@@ -43,7 +44,7 @@ def delete_user_by_id(user_id: int, db: Session = Depends(get_db)):
 
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     
     db.delete(user)
     db.commit()

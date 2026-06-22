@@ -1,9 +1,12 @@
 from fastapi import APIRouter,Depends, status, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from app.auth import hash_password, verify_password
 from app.database import get_db
 from sqlalchemy.orm import Session 
 from app.model import User
-from app.schemas import UserRegister, UserLogin, UserResponse, UserUpdate
+from app.schemas import UserRegister, UserLogin, UserResponse, UserUpdate, TokenResponse, ChangePasswordRequest
+from app.auth import create_access_token
+from app.dependencies import get_current_user
 
 
 user_router = APIRouter(prefix="/user", tags=["User APIs"])
@@ -34,10 +37,10 @@ def register_user(user_data: UserRegister, db: Session = Depends(get_db)):
     return new_user
 
 
-@user_router.post("/login")
-def login_user(login_data: UserLogin, db: Session = Depends(get_db)):
+@user_router.post("/login", response_model= TokenResponse)
+def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
 
-    user = db.query(User).filter(User.email == login_data.email).first()
+    user = db.query(User).filter(User.email == form_data.username).first()
 
     if not user:
         raise HTTPException(
@@ -45,9 +48,9 @@ def login_user(login_data: UserLogin, db: Session = Depends(get_db)):
             detail="Invalid email or password"
         )
 
-    is_password_correct = verify_password(login_data.password, user.hashed_password)
+    is_password_correct = verify_password(form_data.password, user.hashed_password)
 
-    if not verify_password(login_data.password, user.hashed_password):
+    if not is_password_correct:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password"
@@ -57,28 +60,24 @@ def login_user(login_data: UserLogin, db: Session = Depends(get_db)):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="User account is inactive"
         )
+    access_token = create_access_token( user_id=user.id, role=user.role )
 
-    return {
-        "message": "Login successful",
-        "user_id": user.id,
-        "role": user.role
-    }
+    return { "access_token": access_token, "token_type": "bearer", "role": user.role }
 
-@user_router.get("/me/{user_id}", response_model=UserResponse)
-def get_user_by_id(user_id: int, db: Session= Depends(get_db)):
+@user_router.get("/me", response_model=UserResponse, status_code=status.HTTP_200_OK)
+def get_my_profile(db: Session= Depends(get_db), current_user: dict = Depends(get_current_user)):
 
-    user = db.query(User).filter(User.id == user_id).first()
-
+    user = db.query(User).filter(User.id == current_user["user_id"]).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     
     return user
 
-@user_router.put("/update/{user_id}", response_model= UserResponse, status_code=status.HTTP_200_OK)
-def update_user_by_id(user_id: int, user_data: UserUpdate, db: Session = Depends(get_db)):
 
-    user = db.query(User).filter(User.id == user_id).first()
+@user_router.put("/me", response_model= UserResponse, status_code=status.HTTP_200_OK)
+def update_my_profile(user_data: UserUpdate, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
 
+    user = db.query(User).filter(User.id == current_user["user_id"]).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not Found")
     
@@ -88,10 +87,31 @@ def update_user_by_id(user_id: int, user_data: UserUpdate, db: Session = Depends
     if user_data.city_id is not None:
         user.city_id = user_data.city_id
 
-    if user_data.password is not None:
-        user.hashed_password = hash_password(user_data.password)
-
     db.commit() 
     db.refresh(user)
 
     return user
+
+@user_router.put("/me/password", status_code=status.HTTP_200_OK)
+def change_my_password(password_data: ChangePasswordRequest, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+
+    user = db.query(User).filter(User.id == current_user["user_id"]).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not Found")
+    
+    is_current_password_correct = verify_password(password_data.current_password, user.hashed_password)
+
+    if not is_current_password_correct:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Current password is incorrect"
+        )
+    
+    user.hashed_password = hash_password(password_data.new_password)
+
+    db.commit() 
+    db.refresh(user)
+
+    return {
+        "message": "Password updated successfully"
+    }

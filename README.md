@@ -24,13 +24,17 @@ store-management-microservices/
 
 ### Users Service
 
-Handles user registration and login.
+Handles user accounts, authentication, and role-based access control.
 
-* Password hashing
+* User registration
+* Password hashing with bcrypt
+* JWT authentication
+* Protected user profile APIs
+* Password change API
 * User and admin roles
-* JWT authentication will be added later
+* Admin-only user management APIs
 
-Status: Completed basic registration and login.
+Status: Completed.
 
 ### Catalog Service
 
@@ -138,20 +142,24 @@ Completed:
 
 * Users Service setup
 * SQLite database connection
-* User registration
-* Password hashing
-* User login
-* User profile
-* User update
+* User registration and email validation
+* Password hashing and password verification
+* JWT login and access-token generation
+* Protected user profile APIs
+* User profile update
+* Password change API
+* Role-based access control
+* Admin-only APIs
+* User activation/deactivation
+* User deletion
 * Pydantic validation
 * Swagger API documentation
-* Admin APIs
 
 Next:
 
-* JWT authentication
 * Catalog Service
 * Warehouse Service
 * Order Service
 * API Gateway
-* Docker Compose setup
+* PostgreSQL database container
+* Docker containers and Docker Compose setup
