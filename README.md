@@ -14,7 +14,7 @@ store-management-microservices/
 ├── api-gateway/
 ├── users-service/
 ├── catalog-service/
-├── warehouse-service/
+├── inventory-service/
 ├── order-service/
 ├── docker-compose.yml
 └── README.md
@@ -50,19 +50,22 @@ Manages cities, categories, products, and product availability by city.
 * JWT authentication and admin-role authorization for all `/admin/*` APIs
 * Public `/catalog/*` APIs remain accessible without JWT
 
-Status: Completed
+Status: Completed.
 
-
-### Warehouse Service
+### Inventory Service
 
 Manages product stock for each city.
 
-* Add stock
-* Reduce stock
-* Check available stock
-* Low-stock products
+* Create inventory records for a city and product
+* View all inventory records
+* View inventory by ID
+* Update stock quantity
+* Delete inventory records
+* JWT authentication and admin-role authorization for all inventory admin APIs
 
-Status: Planned.
+Inventory stores `city_id` and `product_id` from Catalog Service as normal IDs. It has its own database and does not use cross-service foreign keys.
+
+Status: Completed.
 
 ### Order Service
 
@@ -85,7 +88,7 @@ The single entry point for all client requests.
 /cities/*     → Catalog Service
 /catalogs/*   → Catalog Service
 /products/*   → Catalog Service
-/inventory/*  → Warehouse Service
+/inventory/*  → Inventory Service
 /orders/*     → Order Service
 ```
 
@@ -110,7 +113,7 @@ An admin can:
 
 * Manage cities
 * Manage catalogs and products
-* Manage stock
+* Manage inventory stock by city and product
 * View all orders
 * Manage users
 
@@ -123,11 +126,11 @@ User Panel / Admin Panel
           ↓
 Users Service
 Catalog Service
-Warehouse Service
+Inventory Service
 Order Service
 ```
 
-Each service will have its own database.
+Each service has its own database.
 
 ## Technology
 
@@ -169,12 +172,18 @@ Completed:
 * Catalog Service public APIs for active cities, categories, products, and category-based product filtering
 * JWT protection and role-based authorization for Catalog Service admin APIs
 * Catalog Service running on port `8002`
+* Inventory Service project setup
+* Inventory Service SQLite database connection
+* Inventory Service database model: Inventory
+* Inventory Service Pydantic request and response schemas
+* Inventory Service admin APIs for creating, viewing, updating, and deleting inventory records
+* Inventory Service duplicate city-product inventory validation
+* JWT protection and admin-role authorization for Inventory Service admin APIs
+* Inventory Service running on port `8003`
 
-Next:
+## Next
 
-* Warehouse Service
 * Order Service
 * API Gateway
 * PostgreSQL database container
 * Docker containers and Docker Compose setup
-
