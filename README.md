@@ -44,8 +44,11 @@ Manages cities, categories, products, and product availability by city.
 * Product category management
 * Product catalog management
 * Product availability for each city
+* Admin APIs for cities, categories, products, and city-product assignments
+* Public APIs to view active cities, categories, and available products by city
+* Product filtering by city and category
 
-Status: In progress.
+Status: Completed — JWT protection pending.
 
 Current work completed:
 
@@ -168,11 +171,15 @@ Completed:
 * Catalog Service project setup
 * Catalog Service SQLite database connection
 * Catalog Service database models: City, Category, Product, and CityProduct
+* Catalog Service Pydantic request and response schemas
+* Catalog Service admin APIs for cities, categories, products, and city-product assignments
+* Catalog Service status management for cities, categories, products, and city-product availability
+* Catalog Service public APIs for active cities, categories, products, and category-based product filtering
 * Catalog Service running on port `8002`
 
 Next:
 
-* Catalog Service schemas and APIs
+* JWT protection and role-based authorization for Catalog Service admin APIs
 * Warehouse Service
 * Order Service
 * API Gateway

@@ -8,10 +8,12 @@ It manages cities, product categories, products, and product availability for ea
 
 * Catalog Service project setup
 * SQLite database connection
-* City table
-* Category table
-* Product table
-* City product availability table
+* City, category, product, and city-product database tables
+* Pydantic request and response schemas
+* Admin APIs for cities, categories, products, and city-product assignments
+* Admin APIs to enable or disable cities, categories, products, and city-product availability
+* Public catalog APIs to view active cities, categories, and available products by city
+* Product filtering by city and category
 * FastAPI service running on port `8002`
 
 ## Database Tables
@@ -47,8 +49,8 @@ http://127.0.0.1:8002/docs
 
 ## Next Features
 
-* Pydantic schemas
-* Admin APIs for cities, categories, and products
-* Public APIs to view city products
 * JWT protection for admin APIs
-* PostgreSQL and Docker support
+* Role-based admin authorization
+* PostgreSQL database migration
+* Docker container support
+* API Gateway integration
