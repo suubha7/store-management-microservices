@@ -4,8 +4,9 @@ from app.database import get_db
 
 from app.models import Product
 from app.schema.product import ProductCreate, ProductUpdate, ProductResponse, ProductStatusUpdate
+from app.dependencies import require_admin
 
-product_router = APIRouter(prefix="/admin", tags=["Admin Products"])
+product_router = APIRouter(prefix="/admin", tags=["Admin Products"], dependencies=[Depends(require_admin)])
 
 @product_router.get("/products",response_model=list[ProductResponse])
 def get_products(db: Session = Depends(get_db)):

@@ -14,6 +14,8 @@ It manages cities, product categories, products, and product availability for ea
 * Admin APIs to enable or disable cities, categories, products, and city-product availability
 * Public catalog APIs to view active cities, categories, and available products by city
 * Product filtering by city and category
+* JWT protection for admin APIs
+* Role-based admin authorization
 * FastAPI service running on port `8002`
 
 ## Database Tables
@@ -49,8 +51,6 @@ http://127.0.0.1:8002/docs
 
 ## Next Features
 
-* JWT protection for admin APIs
-* Role-based admin authorization
 * PostgreSQL database migration
 * Docker container support
 * API Gateway integration

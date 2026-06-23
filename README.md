@@ -47,18 +47,10 @@ Manages cities, categories, products, and product availability by city.
 * Admin APIs for cities, categories, products, and city-product assignments
 * Public APIs to view active cities, categories, and available products by city
 * Product filtering by city and category
+* JWT authentication and admin-role authorization for all `/admin/*` APIs
+* Public `/catalog/*` APIs remain accessible without JWT
 
-Status: Completed — JWT protection pending.
-
-Current work completed:
-
-* Catalog Service project setup
-* SQLite database connection
-* City table
-* Category table
-* Product table
-* City product availability table
-* FastAPI service running on port `8002`
+Status: Completed
 
 
 ### Warehouse Service
@@ -175,11 +167,11 @@ Completed:
 * Catalog Service admin APIs for cities, categories, products, and city-product assignments
 * Catalog Service status management for cities, categories, products, and city-product availability
 * Catalog Service public APIs for active cities, categories, products, and category-based product filtering
+* JWT protection and role-based authorization for Catalog Service admin APIs
 * Catalog Service running on port `8002`
 
 Next:
 
-* JWT protection and role-based authorization for Catalog Service admin APIs
 * Warehouse Service
 * Order Service
 * API Gateway

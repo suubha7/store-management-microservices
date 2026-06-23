@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.database import get_db
+from app.dependencies import require_admin
 
 from app.models import Category
 from app.schema.category import CategoryCreate, CategoryUpdate, CategoryResponse, CategoryStatusUpdate
 
-category_router = APIRouter(prefix="/admin", tags=["Admin Categories"])
+category_router = APIRouter(prefix="/admin", tags=["Admin Categories"], dependencies=[Depends(require_admin)])
 
 @category_router.get("/categories", response_model=list[CategoryResponse])
 def get_categories(db: Session= Depends(get_db)):

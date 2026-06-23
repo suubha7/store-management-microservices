@@ -3,9 +3,10 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import City
 from app.schema.city import CityCreate, CityStatusUpdate, CityResponse
+from app.dependencies import require_admin
 
 
-city_router = APIRouter(prefix="/admin", tags=["Admin Cities"])
+city_router = APIRouter(prefix="/admin", tags=["Admin Cities"], dependencies=[Depends(require_admin)])
 
 @city_router.get("/cities", response_model=list[CityResponse])
 def get_cities(db: Session = Depends(get_db)):

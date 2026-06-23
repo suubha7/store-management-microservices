@@ -3,8 +3,9 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import CityProduct, City, Product
 from app.schema.city_product import CityProductCreate, CityProductResponse, CityProductAvailabilityUpdate
+from app.dependencies import require_admin
 
-city_product_router = APIRouter(prefix="/admin", tags=["Admin City Products"])
+city_product_router = APIRouter(prefix="/admin", tags=["Admin City Products"], dependencies=[Depends(require_admin)])
 
 
 @city_product_router.post("/city-products", response_model= CityProductResponse, status_code=status.HTTP_201_CREATED)

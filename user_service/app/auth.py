@@ -1,9 +1,13 @@
 from pwdlib import PasswordHash
 from jose import jwt, JWTError
 from datetime import datetime, timezone, timedelta
+from dotenv import load_dotenv
+import os
 
-SECRET_KEY = "store-management-users-service-secret-key-2026"
-ALGORITHM = "HS256"
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 password_hash = PasswordHash.recommended()
