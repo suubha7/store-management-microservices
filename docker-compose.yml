@@ -65,8 +65,32 @@ services:
     ports:
       - "8003:8000"
 
+  order-db:
+    image: postgres:16
+    container_name: order-db
+    environment:
+      POSTGRES_DB: order_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5436:5432"
+    volumes:
+      - order_postgres_data:/var/lib/postgresql/data
+
+  order-api:
+    build: ./order_service
+    container_name: order-api
+    depends_on:
+      - order-db
+      - catalog-api
+      - inventory-api
+    env_file:
+      - ./order_service/.env
+    ports:
+      - "8004:8000"
+
 volumes:
   users_postgres_data:
   catalog_postgres_data:
   inventory_postgres_data:
-
+  order_postgres_data:

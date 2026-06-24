@@ -4,11 +4,13 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Inventory
 from app.schema.inventory_schema import StockRequest, StockResponse
+from app.internal_dependencies import verify_internal_service_key
 
 
 inventory_internal_router = APIRouter(
     prefix="/inventory",
-    tags=["Inventory Internal APIs"]
+    tags=["Inventory Internal APIs"],
+    dependencies=[Depends(verify_internal_service_key)]
 )
 
 

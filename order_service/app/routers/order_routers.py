@@ -9,13 +9,20 @@ from app.models import CartItem, Order, OrderItem
 from app.dependencies import get_current_user
 from app.schema.order_schema import CheckoutRequest, OrderResponse, CheckoutResponse
 
+
 load_dotenv()
 
 CATALOG_SERVICE_URL = os.getenv("CATALOG_SERVICE_URL")
 INVENTORY_SERVICE_URL = os.getenv("INVENTORY_SERVICE_URL")
+INTERNAL_SERVICE_KEY = os.getenv("INTERNAL_SERVICE_KEY")
+
+if not INTERNAL_SERVICE_KEY:
+    raise RuntimeError("INTERNAL_SERVICE_KEY is missing in .env")
+
+INTERNAL_HEADERS = {"X-Internal-Service-Key": INTERNAL_SERVICE_KEY}
 
 
-order_router = APIRouter(prefix="/orders", tags=["Order APIs"], dependencies=[Depends(get_current_user)])
+order_router = APIRouter(prefix="/orders",tags=["Order APIs"],dependencies=[Depends(get_current_user)])
 
 
 @order_router.post(
@@ -43,7 +50,6 @@ def checkout(
     product_details = []
     total_amount = 0.0
 
-    
     for cart_item in cart_items:
         try:
             catalog_response = httpx.get(
@@ -86,6 +92,7 @@ def checkout(
             stock_response = httpx.post(
                 f"{INVENTORY_SERVICE_URL}/inventory/check-stock",
                 json=stock_request_data,
+                headers=INTERNAL_HEADERS,
                 timeout=5.0
             )
         except httpx.ConnectError:
@@ -98,6 +105,12 @@ def checkout(
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Inventory not found for product {cart_item.product_id} in this city"
+            )
+
+        if stock_response.status_code == status.HTTP_403_FORBIDDEN:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Order Service is not authorized to access Inventory Service"
             )
 
         if stock_response.status_code != status.HTTP_200_OK:
@@ -127,7 +140,6 @@ def checkout(
 
         total_amount += subtotal
 
-    # Step 2: Reduce stock only after every product passes the stock check.
     for product in product_details:
         try:
             reduce_stock_response = httpx.post(
@@ -137,6 +149,7 @@ def checkout(
                     "product_id": product["product_id"],
                     "quantity": product["quantity"]
                 },
+                headers=INTERNAL_HEADERS,
                 timeout=5.0
             )
         except httpx.ConnectError:
@@ -151,13 +164,18 @@ def checkout(
                 detail=f"Insufficient stock for product {product['product_id']}"
             )
 
+        if reduce_stock_response.status_code == status.HTTP_403_FORBIDDEN:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Order Service is not authorized to access Inventory Service"
+            )
+
         if reduce_stock_response.status_code != status.HTTP_200_OK:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail="Could not reduce inventory stock"
             )
 
-    # Step 3: Create the final order after stock reduction succeeds.
     new_order = Order(
         user_id=user_id,
         city_id=checkout_data.city_id,
@@ -190,8 +208,8 @@ def checkout(
     return new_order
 
 
-@order_router.get("",response_model=list[OrderResponse])
-def get_my_orders(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+@order_router.get("", response_model=list[OrderResponse])
+def get_my_orders(db: Session = Depends(get_db),current_user: dict = Depends(get_current_user)):
     user_id = int(current_user["user_id"])
 
     orders = db.query(Order).filter(Order.user_id == user_id).all()
@@ -200,12 +218,12 @@ def get_my_orders(db: Session = Depends(get_db), current_user: dict = Depends(ge
 
 
 @order_router.get("/{order_id}", response_model=CheckoutResponse)
-def get_my_order_by_id(order_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+def get_my_order_by_id(order_id: int,db: Session = Depends(get_db),current_user: dict = Depends(get_current_user)):
     user_id = int(current_user["user_id"])
 
-    order = db.query(Order).filter(Order.id == order_id, Order.user_id == user_id).first()
+    order = db.query(Order).filter(Order.id == order_id,Order.user_id == user_id).first()
 
     if not order:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Order not found")
 
     return order
