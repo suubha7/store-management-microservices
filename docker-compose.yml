@@ -1,0 +1,25 @@
+services:
+  users-db:
+    image: postgres:16
+    container_name: users-db
+    environment:
+      POSTGRES_DB: users_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - users_postgres_data:/var/lib/postgresql/data
+
+  users-api:
+    build: ./user_service
+    container_name: users-api
+    depends_on:
+      - users-db
+    env_file:
+      - ./user_service/.env
+    ports:
+      - "8001:8000"
+
+volumes:
+  users_postgres_data:
