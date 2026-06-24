@@ -61,7 +61,9 @@ Manages product stock for each city.
 * View inventory by ID
 * Update stock quantity
 * Delete inventory records
-* JWT authentication and admin-role authorization for all inventory admin APIs
+* Check stock for Order Service
+* Reduce stock after successful checkout
+* JWT authentication and admin-role authorization for all `/admin/*` inventory APIs
 
 Inventory stores `city_id` and `product_id` from Catalog Service as normal IDs. It has its own database and does not use cross-service foreign keys.
 
@@ -69,15 +71,24 @@ Status: Completed.
 
 ### Order Service
 
-Manages customer orders.
+Manages user carts, checkout, and customer orders.
 
-* Create order
-* Check product price
-* Check stock
-* Reduce stock after order
-* View order status
+* Add products to cart
+* View cart items
+* Update cart quantity
+* Remove cart items
+* Clear cart
+* Checkout from cart
+* Create orders and order items
+* View own orders
+* Admin can view all orders
+* JWT authentication for user and admin APIs
+* Gets real product name and price from Catalog Service
+* Checks and reduces stock using Inventory Service through HTTPX
 
-Status: Planned.
+Order Service stores `user_id`, `city_id`, and `product_id` as normal IDs. It uses a foreign key only between `orders` and `order_items`.
+
+Status: Completed.
 
 ### API Gateway
 

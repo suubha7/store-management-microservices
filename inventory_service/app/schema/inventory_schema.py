@@ -21,4 +21,13 @@ class InventoryResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+class StockRequest(BaseModel):
+    city_id: int = Field(gt=0)
+    product_id: int = Field(gt=0)
+    quantity: int = Field(gt=0)
+
+class StockResponse(BaseModel):
+    available: bool
+    stock_quantity: int
+
 

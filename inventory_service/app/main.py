@@ -2,10 +2,11 @@ from fastapi import FastAPI
 from app.database import Base, engine
 from app.models import Inventory
 from app.routers.inventory_routers import inventory_router
+from app.routers.inventory_internal_routers import inventory_internal_router
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(tags=["Inventory APIs"])
+app = FastAPI(title="Inventory Service")
 
 @app.get("/")
 def read_root():
@@ -15,3 +16,4 @@ def read_root():
     }
 
 app.include_router(inventory_router)
+app.include_router(inventory_internal_router)

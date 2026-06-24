@@ -10,7 +10,7 @@ from app.routers.catalog_routers import catalog_router
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(title="Catalog Service")
 
 @app.get("/")
 def read_root():
