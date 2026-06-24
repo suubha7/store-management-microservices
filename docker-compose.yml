@@ -4,8 +4,8 @@ services:
     container_name: users-db
     environment:
       POSTGRES_DB: users_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5433:5432"
     volumes:
@@ -21,5 +21,52 @@ services:
     ports:
       - "8001:8000"
 
+  catalog-db:
+    image: postgres:16
+    container_name: catalog-db
+    environment:
+      POSTGRES_DB: catalog_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+    - "5434:5432"
+    volumes:
+      - catalog_postgres_data:/var/lib/postgresql/data
+
+  catalog-api:
+    build: ./catalog_service
+    container_name: catalog-api
+    depends_on:
+      - catalog-db
+    env_file:
+      - ./catalog_service/.env
+    ports:
+      - "8002:8000"
+
+  inventory-db:
+    image: postgres:16
+    container_name: inventory-db
+    environment:
+      POSTGRES_DB: inventory_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+    - "5435:5432"
+    volumes:
+      - inventory_postgres_data:/var/lib/postgresql/data
+
+  inventory-api:
+    build: ./inventory_service
+    container_name: inventory-api
+    depends_on:
+      - inventory-db
+    env_file:
+      - ./inventory_service/.env
+    ports:
+      - "8003:8000"
+
 volumes:
   users_postgres_data:
+  catalog_postgres_data:
+  inventory_postgres_data:
+

@@ -29,7 +29,7 @@ def create_product(product_data: ProductCreate, db: Session = Depends(get_db)):
 
     product = product_data.name.strip().title()
 
-    existing_product = db.query(Product).filter(Product.name == product_data.name).first()
+    existing_product = db.query(Product).filter(Product.name == product).first()
     if existing_product:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Product already exist.")
     
