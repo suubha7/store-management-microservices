@@ -1,157 +1,239 @@
-# Store Management API Gateway
+# API Gateway
 
-The API Gateway is the single entry point for the Store Management Microservices project.
+## Overview
 
-It receives requests from the frontend or API client and forwards them to the correct microservice.
+API Gateway is the single public entry point for the Store Management Microservices project.
 
-## Architecture
+Frontend, Swagger, and Postman send requests only to API Gateway. The Gateway forwards each request to the correct microservice.
+
+---
+
+## Responsibilities
+
+- Receive all client API requests
+- Route requests to the correct microservice
+- Forward request body, query parameters, HTTP method, and headers
+- Forward the `Authorization` JWT header
+- Provide one central Swagger API documentation page
+- Validate request body format using Pydantic schemas
+- Require a Bearer token header for protected Gateway routes
+- Return the target service response to the client
+
+---
+
+## Architecture / Communication
 
 ```text
-Frontend / Postman / Swagger
-            |
-            v
-      API Gateway :8000
-            |
-   --------------------------------
-   |              |               |
-Users Service  Catalog Service  Order Service
-                                   |
-                                   v
-                            Inventory Service
+Frontend / Swagger / Postman
+            │
+            ▼
+       API Gateway :8000
+            │
+ ┌──────────┼───────────┬──────────────┐
+ ▼          ▼           ▼              ▼
+Users    Catalog     Inventory       Order
+Service  Service      Service       Service
 ```
 
-The frontend communicates only with the API Gateway.
+The frontend must call only API Gateway.
 
-## Current Gateway Responsibilities
+```
+Correct:
+Frontend → API Gateway → Microservice
 
-* Routes requests to the correct microservice
-* Forwards request body, query parameters, and HTTP method
-* Forwards the `Authorization` header
-* Returns the target service response to the client
-* Provides one central Swagger API documentation page
+Incorrect:
+Frontend → Users Service directly
+Frontend → Catalog Service directly
+Frontend → Inventory Service directly
+Frontend → Order Service directly
+```
 
-## Current Scope
+---
 
-This version is a lightweight proxy gateway.
+## Features
 
-It does not yet contain:
+- Explicit routes for Users, Catalog, Cart, Orders, and Admin APIs
+- Gateway request schemas for POST and PUT routes
+- Swagger request body documentation
+- Swagger Bearer token authorization support
+- Authorization header forwarding
+- Request body forwarding
+- Query parameter forwarding
+- HTTP method forwarding
+- Service unavailable handling
+- One public Gateway URL for frontend integration
 
-* Gateway Pydantic request schemas
-* Gateway-level JWT validation
-* Swagger `Authorize` button support
-* CORS configuration for frontend
-* Rate limiting
-* Centralized logging
-* Retry handling
+---
 
-Each microservice remains responsible for:
+## Service Routes
 
-* JWT validation
-* Role validation
-* Request validation
-* Business rules
-* Database operations
+| Gateway Area | Target Service |
+|---|---|
+| /user/* | Users Service |
+| /catalog/* | Catalog Service |
+| /cart/* | Order Service |
+| /orders/* | Order Service |
+| /admin/users/* | Users Service |
+| /admin/catalog/* | Catalog Service |
+| /admin/inventory/* | Inventory Service |
+| /admin/orders/* | Order Service |
 
-## Services
+---
 
-| Service           | Internal Docker URL         | Responsibility                                           |
-| ----------------- | --------------------------- | -------------------------------------------------------- |
-| Users Service     | `http://users-api:8000`     | Registration, login, user profile, admin user management |
-| Catalog Service   | `http://catalog-api:8000`   | Cities, categories, products, city-product mapping       |
-| Inventory Service | `http://inventory-api:8000` | Inventory CRUD, stock check, stock reduction             |
-| Order Service     | `http://order-api:8000`     | Cart, checkout, customer orders, admin orders            |
+## API Endpoints
 
-## Public Gateway Routes
+### User APIs
 
-### Users
+| Method | Gateway Endpoint | Target Service Endpoint |
+|--------|------------------|------------------------|
+| POST | /user/register | Users Service /user/register |
+| POST | /user/login | Users Service /user/login |
+| GET | /user/me | Users Service /user/me |
+| PUT | /user/me | Users Service /user/me |
+| PUT | /user/me/password | Users Service /user/me/password |
 
-```text
+### Public Catalog APIs
+
+| Method | Gateway Endpoint | Description |
+|--------|------------------|-------------|
+| GET | /catalog/cities | Get active cities |
+| GET | /catalog/cities/{city_id}/categories | Get categories for city |
+| GET | /catalog/cities/{city_id}/products | Get products for city |
+| GET | /catalog/cities/{city_id}/products/category/{category_id} | Get products by city and category |
+| GET | /catalog/products/{product_id} | Get product details |
+
+### Cart APIs
+
+| Method | Gateway Endpoint | Description |
+|--------|------------------|-------------|
+| GET | /cart | Get current user cart |
+| POST | /cart/items | Add product to cart |
+| PUT | /cart/items/{cart_item_id} | Update cart item |
+| DELETE | /cart/items/{cart_item_id} | Remove cart item |
+| DELETE | /cart/clear | Clear cart |
+
+### Order APIs
+
+| Method | Gateway Endpoint | Description |
+|--------|------------------|-------------|
+| POST | /orders/checkout | Checkout cart |
+| GET | /orders | Get current user orders |
+| GET | /orders/{order_id} | Get order by ID |
+
+### Admin User APIs
+
+| Method | Gateway Endpoint | Description |
+|--------|------------------|-------------|
+| GET | /admin/users | Get all users |
+| GET | /admin/users/{user_id} | Get user by ID |
+| PUT | /admin/users/{user_id}/status | Update user status |
+| DELETE | /admin/users/{user_id} | Delete user |
+
+### Admin Catalog APIs
+
+| Method | Gateway Endpoint | Description |
+|--------|------------------|-------------|
+| GET | /admin/catalog/cities | Get all cities |
+| GET | /admin/catalog/cities/{city_id} | Get city by ID |
+| POST | /admin/catalog/city | Create city |
+| PUT | /admin/catalog/city/{city_id}/status | Update city status |
+| GET | /admin/catalog/categories | Get all categories |
+| GET | /admin/catalog/categories/{category_id} | Get category by ID |
+| POST | /admin/catalog/categories | Create category |
+| PUT | /admin/catalog/categories/{category_id} | Update category |
+| PUT | /admin/catalog/categories/{category_id}/status | Update category status |
+| GET | /admin/catalog/products | Get all products |
+| GET | /admin/catalog/products/{product_id} | Get product by ID |
+| POST | /admin/catalog/products | Create product |
+| PUT | /admin/catalog/products/{product_id} | Update product |
+| PUT | /admin/catalog/products/{product_id}/status | Update product status |
+| GET | /admin/catalog/city-products | Get city-product mappings |
+| GET | /admin/catalog/city-products/{city_product_id} | Get mapping by ID |
+| POST | /admin/catalog/city-products | Assign product to city |
+| PUT | /admin/catalog/city-products/{city_product_id}/availability | Update availability |
+| DELETE | /admin/catalog/city-products/{city_product_id} | Delete mapping |
+
+### Admin Inventory APIs
+
+| Method | Gateway Endpoint | Description |
+|--------|------------------|-------------|
+| GET | /admin/inventory/inventories | Get inventory records |
+| POST | /admin/inventory/inventories | Create inventory |
+| GET | /admin/inventory/inventories/{inventory_id} | Get inventory by ID |
+| PUT | /admin/inventory/inventories/{inventory_id} | Update inventory stock |
+| DELETE | /admin/inventory/inventories/{inventory_id} | Delete inventory |
+
+### Admin Order APIs
+
+| Method | Gateway Endpoint | Description |
+|--------|------------------|-------------|
+| GET | /admin/orders | Get all orders |
+| GET | /admin/orders/{order_id} | Get order by ID |
+
+---
+
+## Authentication and Authorization
+
+Public routes:
+
+```
 POST /user/register
 POST /user/login
-GET  /user/me
-PUT  /user/me
-PUT  /user/me/password
+GET  /catalog/*
 ```
 
-### Catalog
+Protected customer routes:
 
-```text
-GET /catalog/cities
-GET /catalog/cities/{city_id}/categories
-GET /catalog/cities/{city_id}/products
-GET /catalog/cities/{city_id}/products/category/{category_id}
-GET /catalog/products/{product_id}
+```
+GET /user/me
+PUT /user/me
+PUT /user/me/password
+/cart/*
+/orders/*
 ```
 
-### Cart
+Protected admin routes:
 
-```text
-POST   /cart/items
-GET    /cart
-PUT    /cart/items/{cart_item_id}
-DELETE /cart/items/{cart_item_id}
-DELETE /cart/clear
+```
+/admin/*
 ```
 
-### Orders
+Protected routes require:
 
-```text
-POST /orders/checkout
-GET  /orders
-GET  /orders/{order_id}
+```
+Authorization: Bearer <access_token>
 ```
 
-### Admin
+---
 
-```text
-GET    /admin/users
-GET    /admin/users/{user_id}
-PUT    /admin/users/{user_id}/status
-DELETE /admin/users/{user_id}
+## Swagger Authorization
 
-GET  /admin/catalog/cities
-GET  /admin/catalog/cities/{city_id}
-POST /admin/catalog/city
-PUT  /admin/catalog/city/{city_id}/status
+1. Call `POST /user/login`
+2. Copy the `access_token`
+3. Click **Authorize** in Gateway Swagger
+4. Paste only the token value
+5. Click **Authorize**
+6. Call protected routes
 
-GET  /admin/catalog/categories
-GET  /admin/catalog/categories/{category_id}
-POST /admin/catalog/categories
-PUT  /admin/catalog/categories/{category_id}
-PUT  /admin/catalog/categories/{category_id}/status
+> The Gateway checks that a Bearer token exists and forwards it.
+> The target microservice performs final JWT validation, role validation, and business-rule validation.
 
-GET  /admin/catalog/products
-GET  /admin/catalog/products/{product_id}
-POST /admin/catalog/products
-PUT  /admin/catalog/products/{product_id}
-PUT  /admin/catalog/products/{product_id}/status
+---
 
-GET    /admin/catalog/city-products
-GET    /admin/catalog/city-products/{city_product_id}
-POST   /admin/catalog/city-products
-PUT    /admin/catalog/city-products/{city_product_id}/availability
-DELETE /admin/catalog/city-products/{city_product_id}
+## Internal Routes
 
-GET    /admin/inventory/inventories
-POST   /admin/inventory/inventories
-GET    /admin/inventory/inventories/{inventory_id}
-PUT    /admin/inventory/inventories/{inventory_id}
-DELETE /admin/inventory/inventories/{inventory_id}
+These Inventory Service routes are not exposed through API Gateway:
 
-GET /admin/orders
-GET /admin/orders/{order_id}
 ```
-
-## Internal Routes Not Exposed Through Gateway
-
-These routes are called only by Order Service through the Docker network.
-
-```text
 POST /inventory/check-stock
 POST /inventory/reduce-stock
 ```
 
-The customer must not access these routes directly.
+Order Service calls them internally through Docker networking during checkout.
+
+Customers must not call these routes directly.
+
+---
 
 ## Environment Variables
 
@@ -164,9 +246,11 @@ INVENTORY_SERVICE_URL=http://inventory-api:8000
 ORDER_SERVICE_URL=http://order-api:8000
 ```
 
-The names `users-api`, `catalog-api`, `inventory-api`, and `order-api` must match the Docker Compose service names.
+> The Docker service names must match `docker-compose.yml`.
 
-## Run With Docker Compose
+---
+
+## Run with Docker Compose
 
 From the project root:
 
@@ -174,37 +258,85 @@ From the project root:
 docker compose up --build
 ```
 
-Open Gateway Swagger:
+To rebuild only Gateway:
 
-```text
+```bash
+docker compose up --build api-gateway
+```
+
+---
+
+## Swagger URL
+
+```
 http://127.0.0.1:8000/docs
 ```
 
-## Authentication
+---
 
-Public routes:
+## Project Structure
 
-```text
-POST /user/register
-POST /user/login
-GET  /catalog/...
+```
+api_gateway/
+├── app/
+│   ├── routers/
+│   │   ├── user_gateway_router.py
+│   │   ├── catalog_gateway_router.py
+│   │   ├── order_gateway_router.py
+│   │   └── admin_gateway_router.py
+│   ├── schemas/
+│   │   ├── user_schema.py
+│   │   ├── catalog_schema.py
+│   │   ├── inventory_schema.py
+│   │   ├── cart_schema.py
+│   │   └── order_schema.py
+│   ├── dependencies.py
+│   └── main.py
+├── Dockerfile
+├── requirements.txt
+├── .env
+└── README.md
 ```
 
-Protected routes require this header:
+---
 
-```http
-Authorization: Bearer <access_token>
+## Tech Stack
+
+- Python
+- FastAPI
+- HTTPX
+- Pydantic
+- JWT Bearer authentication
+- Docker
+- Docker Compose
+- Uvicorn
+
+---
+
+## Testing Flow
+
+1. Start all containers using Docker Compose
+2. Open `http://127.0.0.1:8000/docs`
+3. Register a customer and admin user
+4. Login as admin
+5. Add admin token using Swagger Authorize
+6. Create city, category, product, city-product mapping, and inventory
+7. Login as customer
+8. Add customer token using Swagger Authorize
+9. Browse catalog
+10. Add product to cart
+11. Checkout
+12. Confirm order created, cart cleared, and stock reduced
+13. Login as admin and confirm all orders are visible
+
+---
+
+## Current Status
+
+Completed.
+
+API Gateway is integrated with Users Service, Catalog Service, Inventory Service, and Order Service. The complete backend flow works through:
+
 ```
-
-The Gateway forwards this header to the target service.
-
-JWT validation is currently performed inside each microservice, not in the Gateway.
-
-
-## Next Improvements
-
-* Add Gateway request schemas for POST, PUT, and PATCH routes
-* Add Swagger bearer authorization support
-* Add CORS for frontend integration
-* Add frontend application
-
+http://127.0.0.1:8000
+```
