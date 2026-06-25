@@ -4,15 +4,13 @@ from dotenv import load_dotenv
 from fastapi import APIRouter, Request, Response, HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from app.schema.user_schema import UserRegisterRequest,  UserUpdateRequest,ChangePasswordRequest
+from app.dependencies import require_bearer_token
 
 load_dotenv()
 
 USERS_SERVICE_URL = os.getenv("USERS_SERVICE_URL")
 
-user_gateway_router = APIRouter(
-    prefix="/user",
-    tags=["Users Gateway"]
-)
+user_gateway_router = APIRouter(prefix="/user", tags=["Users Gateway"])
 
 
 async def forward_request(request: Request, url: str):
@@ -49,10 +47,7 @@ async def forward_request(request: Request, url: str):
 
 
 @user_gateway_router.post("/register")
-async def register_user(
-    user_data: UserRegisterRequest,
-    request: Request
-):
+async def register_user(user_data: UserRegisterRequest, request: Request):
     return await forward_request(
         request,
         f"{USERS_SERVICE_URL}/user/register"
@@ -60,9 +55,7 @@ async def register_user(
 
 
 @user_gateway_router.post("/login")
-async def login_user(
-    form_data: OAuth2PasswordRequestForm = Depends()
-):
+async def login_user(form_data: OAuth2PasswordRequestForm = Depends()):
     try:
         async with httpx.AsyncClient() as client:
             response = await client.post(
@@ -77,10 +70,7 @@ async def login_user(
             )
 
     except httpx.ConnectError:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Users Service is unavailable"
-        )
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Users Service is unavailable")
 
     return Response(
         content=response.content,
@@ -90,7 +80,7 @@ async def login_user(
 
 
 
-@user_gateway_router.get("/me")
+@user_gateway_router.get("/me", dependencies=[Depends(require_bearer_token)])
 async def get_my_profile(request: Request):
     return await forward_request(
         request,
@@ -98,7 +88,7 @@ async def get_my_profile(request: Request):
     )
 
 
-@user_gateway_router.put("/me")
+@user_gateway_router.put("/me", dependencies=[Depends(require_bearer_token)])
 async def update_my_profile(user_data: UserUpdateRequest, request: Request):
     return await forward_request(
         request,
@@ -106,11 +96,8 @@ async def update_my_profile(user_data: UserUpdateRequest, request: Request):
     )
 
 
-@user_gateway_router.put("/me/password")
-async def change_my_password(
-    password_data: ChangePasswordRequest,
-    request: Request
-):
+@user_gateway_router.put("/me/password", dependencies=[Depends(require_bearer_token)])
+async def change_my_password(password_data: ChangePasswordRequest,request: Request):
     return await forward_request(
         request,
         f"{USERS_SERVICE_URL}/user/me/password"

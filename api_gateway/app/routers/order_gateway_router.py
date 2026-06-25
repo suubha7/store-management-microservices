@@ -1,14 +1,17 @@
 import os
 import httpx
 from dotenv import load_dotenv
-from fastapi import APIRouter, Request, Response, HTTPException, status
+from fastapi import APIRouter, Request, Response, HTTPException, status, Depends
+from app.dependencies import require_bearer_token
+from app.schema.order_schema import CartItemCreateRequest, CartItemUpdateRequest, CheckoutRequest
 
 load_dotenv()
 
 ORDER_SERVICE_URL = os.getenv("ORDER_SERVICE_URL")
 
 order_gateway_router = APIRouter(
-    tags=["Order Gateway"]
+    tags=["Order Gateway"],
+    dependencies=[Depends(require_bearer_token)]
 )
 
 
@@ -46,7 +49,7 @@ async def forward_request(request: Request, url: str):
 
 
 @order_gateway_router.post("/cart/items")
-async def create_cart_item(request: Request):
+async def create_cart_item(item_data:CartItemCreateRequest, request: Request):
     return await forward_request(
         request,
         f"{ORDER_SERVICE_URL}/cart/items"
@@ -64,6 +67,7 @@ async def get_cart_items(request: Request):
 @order_gateway_router.put("/cart/items/{cart_item_id}")
 async def update_cart_item(
     cart_item_id: int,
+    item_data: CartItemUpdateRequest,
     request: Request
 ):
     return await forward_request(
@@ -92,7 +96,7 @@ async def clear_cart(request: Request):
 
 
 @order_gateway_router.post("/orders/checkout")
-async def checkout(request: Request):
+async def checkout(checkout_data: CheckoutRequest, request: Request):
     return await forward_request(
         request,
         f"{ORDER_SERVICE_URL}/orders/checkout"

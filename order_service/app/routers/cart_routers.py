@@ -38,27 +38,16 @@ def create_cart_item(cart_data: CartItemCreate, db: Session = Depends(get_db), c
     return new_cart_item
 
 
-@cart_router.get(
-    "",
-    response_model=list[CartItemResponse]
-)
-def get_cart_items(
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
-):
+@cart_router.get("", response_model=list[CartItemResponse])
+def get_cart_items(db: Session = Depends(get_db),current_user: dict = Depends(get_current_user)):
     user_id = int(current_user["user_id"])
 
-    cart_items = db.query(CartItem).filter(
-        CartItem.user_id == user_id
-    ).all()
+    cart_items = db.query(CartItem).filter(CartItem.user_id == user_id).all()
 
     return cart_items
 
 
-@cart_router.put(
-    "/items/{cart_item_id}",
-    response_model=CartItemResponse
-)
+@cart_router.put("/items/{cart_item_id}",response_model=CartItemResponse)
 def update_cart_item(
     cart_item_id: int,
     cart_data: CartItemUpdate,
@@ -67,16 +56,10 @@ def update_cart_item(
 ):
     user_id = int(current_user["user_id"])
 
-    cart_item = db.query(CartItem).filter(
-        CartItem.id == cart_item_id,
-        CartItem.user_id == user_id
-    ).first()
+    cart_item = db.query(CartItem).filter(CartItem.id == cart_item_id,CartItem.user_id == user_id).first()
 
     if not cart_item:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Cart item not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cart item not found")
 
     cart_item.quantity = cart_data.quantity
 
@@ -86,10 +69,7 @@ def update_cart_item(
     return cart_item
 
 
-@cart_router.delete(
-    "/items/{cart_item_id}",
-    status_code=status.HTTP_204_NO_CONTENT
-)
+@cart_router.delete("/items/{cart_item_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_cart_item(
     cart_item_id: int,
     db: Session = Depends(get_db),
@@ -97,33 +77,19 @@ def delete_cart_item(
 ):
     user_id = int(current_user["user_id"])
 
-    cart_item = db.query(CartItem).filter(
-        CartItem.id == cart_item_id,
-        CartItem.user_id == user_id
-    ).first()
+    cart_item = db.query(CartItem).filter(CartItem.id == cart_item_id, CartItem.user_id == user_id).first()
 
     if not cart_item:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Cart item not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cart item not found")
 
     db.delete(cart_item)
     db.commit()
 
 
-@cart_router.delete(
-    "/clear",
-    status_code=status.HTTP_204_NO_CONTENT
-)
-def clear_cart(
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
-):
+@cart_router.delete("/clear",status_code=status.HTTP_204_NO_CONTENT)
+def clear_cart(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     user_id = int(current_user["user_id"])
 
-    db.query(CartItem).filter(
-        CartItem.user_id == user_id
-    ).delete()
+    db.query(CartItem).filter(CartItem.user_id == user_id).delete()
 
     db.commit()

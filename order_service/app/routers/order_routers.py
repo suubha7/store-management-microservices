@@ -25,27 +25,14 @@ INTERNAL_HEADERS = {"X-Internal-Service-Key": INTERNAL_SERVICE_KEY}
 order_router = APIRouter(prefix="/orders",tags=["Order APIs"],dependencies=[Depends(get_current_user)])
 
 
-@order_router.post(
-    "/checkout",
-    response_model=CheckoutResponse,
-    status_code=status.HTTP_201_CREATED
-)
-def checkout(
-    checkout_data: CheckoutRequest,
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
-):
+@order_router.post("/checkout", response_model=CheckoutResponse, status_code=status.HTTP_201_CREATED)
+def checkout(checkout_data: CheckoutRequest, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     user_id = int(current_user["user_id"])
 
-    cart_items = db.query(CartItem).filter(
-        CartItem.user_id == user_id
-    ).all()
+    cart_items = db.query(CartItem).filter(CartItem.user_id == user_id).all()
 
     if not cart_items:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Cart is empty"
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Cart is empty")
 
     product_details = []
     total_amount = 0.0
@@ -108,24 +95,17 @@ def checkout(
             )
 
         if stock_response.status_code == status.HTTP_403_FORBIDDEN:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Order Service is not authorized to access Inventory Service"
-            )
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Order Service is not authorized to access Inventory Service")
 
         if stock_response.status_code != status.HTTP_200_OK:
-            raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail="Inventory Service is unavailable"
-            )
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Inventory Service is unavailable")
 
         stock_data = stock_response.json()
 
         if not stock_data["available"]:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Insufficient stock for product {cart_item.product_id}"
-            )
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Insufficient stock for product {cart_item.product_id}")
+                
+            
 
         price = product_data["price"]
         subtotal = price * cart_item.quantity
@@ -153,35 +133,18 @@ def checkout(
                 timeout=5.0
             )
         except httpx.ConnectError:
-            raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail="Inventory Service is not running or cannot be reached"
-            )
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Inventory Service is not running or cannot be reached")
 
         if reduce_stock_response.status_code == status.HTTP_400_BAD_REQUEST:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Insufficient stock for product {product['product_id']}"
-            )
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Insufficient stock for product {product['product_id']}")
 
         if reduce_stock_response.status_code == status.HTTP_403_FORBIDDEN:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Order Service is not authorized to access Inventory Service"
-            )
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Order Service is not authorized to access Inventory Service")
 
         if reduce_stock_response.status_code != status.HTTP_200_OK:
-            raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail="Could not reduce inventory stock"
-            )
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Could not reduce inventory stock")
 
-    new_order = Order(
-        user_id=user_id,
-        city_id=checkout_data.city_id,
-        total_amount=total_amount,
-        status="pending"
-    )
+    new_order = Order(user_id=user_id, city_id=checkout_data.city_id, total_amount=total_amount, status="pending")
 
     db.add(new_order)
     db.flush()
@@ -198,9 +161,7 @@ def checkout(
 
         db.add(new_order_item)
 
-    db.query(CartItem).filter(
-        CartItem.user_id == user_id
-    ).delete()
+    db.query(CartItem).filter(CartItem.user_id == user_id).delete()
 
     db.commit()
     db.refresh(new_order)

@@ -14,25 +14,15 @@ inventory_internal_router = APIRouter(
 )
 
 
-@inventory_internal_router.post(
-    "/check-stock",
-    response_model=StockResponse,
-    status_code=status.HTTP_200_OK
-)
-def check_stock(
-    stock_data: StockRequest,
-    db: Session = Depends(get_db)
-):
+@inventory_internal_router.post("/check-stock", response_model=StockResponse,status_code=status.HTTP_200_OK)
+def check_stock(stock_data: StockRequest, db: Session = Depends(get_db)):
     inventory = db.query(Inventory).filter(
         Inventory.city_id == stock_data.city_id,
         Inventory.product_id == stock_data.product_id
     ).first()
 
     if not inventory:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Inventory record not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Inventory record not found")
 
     available = inventory.stock_quantity >= stock_data.quantity
 
@@ -42,31 +32,18 @@ def check_stock(
     }
 
 
-@inventory_internal_router.post(
-    "/reduce-stock",
-    response_model=StockResponse,
-    status_code=status.HTTP_200_OK
-)
-def reduce_stock(
-    stock_data: StockRequest,
-    db: Session = Depends(get_db)
-):
+@inventory_internal_router.post("/reduce-stock", response_model=StockResponse, status_code=status.HTTP_200_OK)
+def reduce_stock(stock_data: StockRequest, db: Session = Depends(get_db)):
     inventory = db.query(Inventory).filter(
         Inventory.city_id == stock_data.city_id,
         Inventory.product_id == stock_data.product_id
     ).first()
 
     if not inventory:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Inventory record not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Inventory record not found")
 
     if inventory.stock_quantity < stock_data.quantity:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Insufficient stock"
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insufficient stock")
 
     inventory.stock_quantity -= stock_data.quantity
 
