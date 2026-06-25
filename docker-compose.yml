@@ -89,6 +89,19 @@ services:
     ports:
       - "8004:8000"
 
+  api-gateway:
+    build: ./api_gateway
+    container_name: api-gateway
+    depends_on:
+      - users-api
+      - catalog-api
+      - inventory-api
+      - order-api
+    env_file:
+      - ./api_gateway/.env
+    ports:
+      - "8000:8000"
+
 volumes:
   users_postgres_data:
   catalog_postgres_data:
