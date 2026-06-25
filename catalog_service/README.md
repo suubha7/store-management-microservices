@@ -7,7 +7,8 @@ It manages cities, product categories, products, and product availability for ea
 ## Current Features
 
 * Catalog Service project setup
-* SQLite database connection
+* PostgreSQL database integration using Docker
+* Docker Compose setup for Catalog API and Catalog PostgreSQL database
 * City, category, product, and city-product database tables
 * Pydantic request and response schemas
 * Admin APIs for cities, categories, products, and city-product assignments
@@ -17,6 +18,24 @@ It manages cities, product categories, products, and product availability for ea
 * JWT protection for admin APIs
 * Role-based admin authorization
 * FastAPI service running on port `8002`
+---
+
+## 4. Add this section before `## Database Tables`
+
+```md
+## Docker Services
+
+Catalog Service runs with two Docker containers:
+
+```text
+catalog-api
+→ FastAPI Catalog Service
+→ Exposed on http://127.0.0.1:8002
+
+catalog-db
+→ PostgreSQL database
+→ Internal database for Catalog Service
+```
 
 ## Database Tables
 
@@ -32,15 +51,29 @@ A product is created once in the `products` table. The `cityproducts` table deci
 * Python
 * FastAPI
 * SQLAlchemy
-* SQLite
+* PostgreSQL
+* Docker
+* Docker Compose
 * Uvicorn
 * uv
 
-## Run Locally
+
+## Environment Variables
+
+Create a `.env` file:
+
+```env
+DATABASE_URL=postgresql://postgres:postgres@order-db:5432/order_db
+
+SECRET_KEY=your_secret_key
+ALGORITHM=HS256
+```
+## Run with Docker Compose
+
+From the root `store-management-microservices` folder:
 
 ```bash
-uv sync
-uv run uvicorn app.main:app --reload --port 8002
+docker compose up --build catalog-db catalog-api
 ```
 
 Open Swagger API documentation:
@@ -51,6 +84,4 @@ http://127.0.0.1:8002/docs
 
 ## Next Features
 
-* PostgreSQL database migration
-* Docker container support
 * API Gateway integration

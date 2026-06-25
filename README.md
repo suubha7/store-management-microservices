@@ -190,11 +190,12 @@ Completed:
 * Inventory Service admin APIs for creating, viewing, updating, and deleting inventory records
 * Inventory Service duplicate city-product inventory validation
 * JWT protection and admin-role authorization for Inventory Service admin APIs
+* Order Servies
+* PostgreSQL database container
+* Docker containers and Docker Compose setup
 * Inventory Service running on port `8003`
 
 ## Next
 
-* Order Service
 * API Gateway
-* PostgreSQL database container
-* Docker containers and Docker Compose setup
+

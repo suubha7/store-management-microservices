@@ -24,7 +24,8 @@ It manages user account registration and login for two roles:
 * Activate or deactivate a user account
 * Delete a user account
 * Role-based access control (`user` and `admin`)
-* SQLite database integration
+* PostgreSQL database integration using Docker
+* Docker Compose setup for Users API and Users PostgreSQL database
 * Pydantic request validation
 * Swagger API documentation
 
@@ -34,7 +35,9 @@ It manages user account registration and login for two roles:
 * Python
 * FastAPI
 * SQLAlchemy
-* SQLite
+* PostgreSQL
+* Docker
+* Docker Compose
 * Pydantic
 * Passlib with bcrypt
 * Uvicorn
@@ -65,8 +68,8 @@ users-service/
 
 ```text
 .venv/
-users.db
 __pycache__/
+.env`
 ```
 
 
@@ -89,31 +92,31 @@ Clone the repository and move into the project folder.
 
 ```bash
 git clone https://github.com/suubha7/store-management-microservices.git
-cd users-service
+cd store-management-microservices
 ```
 
-Install project dependencies:
+## Environment Variables
 
-```bash
-uv sync
+Create a `.env` file:
+
+```env
+DATABASE_URL=postgresql://postgres:postgres@order-db:5432/order_db
+
+SECRET_KEY=your_secret_key
+ALGORITHM=HS256
 ```
 
 ## Run the Service
 
 ```bash
-uv run uvicorn app.main:app --reload --port 8001
+docker compose up --build users-db users-api
 ```
 
 The service runs at:
 
 ```text
-http://127.0.0.1:8001
-```
-
-Swagger documentation:
-
-```text
-http://127.0.0.1:8001/docs
+Users API: http://127.0.0.1:8001
+Users Swagger: http://127.0.0.1:8001/docs
 ```
 
 ## APIs

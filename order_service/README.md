@@ -16,6 +16,9 @@ Order Service manages the user cart and order checkout process for the Store Man
 * JWT authentication for users and admins
 * Gets product name and price from Catalog Service
 * Checks and reduces stock using Inventory Service
+* PostgreSQL database integration using Docker
+* Docker Compose setup for Order API and Order PostgreSQL database
+* Internal service authentication for Inventory stock APIs
 
 ## Services Used
 
@@ -49,10 +52,15 @@ Order Service manages the user cart and order checkout process for the Store Man
 Create a `.env` file:
 
 ```env
+DATABASE_URL=postgresql://postgres:postgres@order-db:5432/order_db
+
 SECRET_KEY=your_secret_key
 ALGORITHM=HS256
-CATALOG_SERVICE_URL=http://127.0.0.1:8002
-INVENTORY_SERVICE_URL=http://127.0.0.1:8003
+
+CATALOG_SERVICE_URL=http://catalog-api:8000
+INVENTORY_SERVICE_URL=http://inventory-api:8000
+
+INTERNAL_SERVICE_KEY=your_internal_service_key
 ```
 
 ## Run the Service
