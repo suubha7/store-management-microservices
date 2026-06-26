@@ -9,12 +9,14 @@ from app.schema.category import CategoryResponse
 
 catalog_router = APIRouter(prefix='/catalog', tags=["Catalog APIs"])
 
+# Retrieve all cities
 @catalog_router.get("/cities", response_model=list[CityResponse])
 def get_cities(db: Session = Depends(get_db)):
     cities = db.query(City).filter(City.is_active == True).all()
 
     return cities
 
+# Retrieve categories available in city
 @catalog_router.get("/cities/{city_id}/categories", response_model= list[CategoryResponse])
 def get_categories_by_city_id(city_id: int, db: Session = Depends(get_db)):
     city = db.query(City).filter(City.id == city_id).first()
@@ -39,6 +41,7 @@ def get_categories_by_city_id(city_id: int, db: Session = Depends(get_db)):
     return categories
     
 
+# Retrieve products available in city
 @catalog_router.get("/cities/{city_id}/products", response_model=list[ProductResponse])
 def get_products_by_city_id(city_id: int, db: Session = Depends(get_db)):
     
@@ -63,6 +66,7 @@ def get_products_by_city_id(city_id: int, db: Session = Depends(get_db)):
     return products
 
 
+# Retrieve products in category
 @catalog_router.get("/cities/{city_id}/products/category/{category_id}", response_model=list[ProductResponse])
 def get_products_by_category_id(city_id: int, category_id: int, db: Session = Depends(get_db)):
 
@@ -89,6 +93,7 @@ def get_products_by_category_id(city_id: int, category_id: int, db: Session = De
     return products
 
 
+# Retrieve product details by ID
 @catalog_router.get("/products/{product_id}", response_model=ProductResponse)
 def get_product_by_product_id(product_id: int, db: Session = Depends(get_db)):
 

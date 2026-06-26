@@ -3,6 +3,7 @@ from typing import Optional
 from datetime import datetime
 
 
+# Schema for creating a product
 class ProductCreate(BaseModel):
 
     name: str = Field(min_length=2, max_length=30)
@@ -10,6 +11,7 @@ class ProductCreate(BaseModel):
     price: float = Field(ge=0)
     category_id: int = Field(gt=0)
 
+# Schema for updating a product
 class ProductUpdate(BaseModel):
 
     name: Optional[str] = Field(default=None, min_length=2, max_length=30)
@@ -17,9 +19,11 @@ class ProductUpdate(BaseModel):
     price: Optional[float] = Field(default=None, ge=0)
     category_id: Optional[int] = Field(default=None, gt=0)
 
+# Schema for updating product status
 class ProductStatusUpdate(BaseModel):
     is_active: bool
 
+# Schema for product response
 class ProductResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

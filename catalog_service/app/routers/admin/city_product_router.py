@@ -8,6 +8,7 @@ from app.dependencies import require_admin
 city_product_router = APIRouter(prefix="/admin", tags=["Admin City Products"], dependencies=[Depends(require_admin)])
 
 
+# Map a product to a city
 @city_product_router.post("/city-products", response_model= CityProductResponse, status_code=status.HTTP_201_CREATED)
 def create_city_product(city_product_data: CityProductCreate, db: Session= Depends(get_db)):
 
@@ -30,6 +31,7 @@ def create_city_product(city_product_data: CityProductCreate, db: Session= Depen
     return new_city_product
 
 
+# Retrieve all city product mappings
 @city_product_router.get("/city-products",response_model=list[CityProductResponse])
 def get_city_products(db: Session = Depends(get_db)):
     city_products = db.query(CityProduct).all()
@@ -37,6 +39,7 @@ def get_city_products(db: Session = Depends(get_db)):
     return city_products
 
 
+# Retrieve city product details by ID
 @city_product_router.get("/city-products/{city_product_id}", response_model=CityProductResponse)
 def get_city_product_by_id(city_product_id: int, db: Session = Depends(get_db)):
 
@@ -47,6 +50,7 @@ def get_city_product_by_id(city_product_id: int, db: Session = Depends(get_db)):
 
     return city_product
 
+# Update product availability in city
 @city_product_router.put("/city-products/{city_product_id}/availability", 
                          response_model=CityProductResponse, 
                          status_code=status.HTTP_200_OK)
@@ -67,6 +71,7 @@ def update_city_product_availability(city_product_id: int,
 
     return city_product
 
+# Delete city product mapping
 @city_product_router.delete("/city-products/{city_product_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_city_product(city_product_id: int, db: Session = Depends(get_db)):
     city_product = db.query(CityProduct).filter(CityProduct.id == city_product_id).first()

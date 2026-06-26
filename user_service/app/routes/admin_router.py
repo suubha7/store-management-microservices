@@ -8,6 +8,7 @@ from app.dependencies import require_admin
 
 admin_router = APIRouter(prefix="/admin", tags=["Admin APIs"], dependencies= [Depends(require_admin)])
 
+# Retrieve all registered users
 @admin_router.get("/users", response_model=list[UserResponse])
 def all_users(db: Session = Depends(get_db)):
 
@@ -15,6 +16,7 @@ def all_users(db: Session = Depends(get_db)):
 
     return users
 
+# Retrieve user details by ID
 @admin_router.get("/user/{user_id}", response_model= UserResponse)
 def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
 
@@ -25,6 +27,7 @@ def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
     
     return user
 
+# Update user status
 @admin_router.put("/user/update_status/{user_id}", response_model=UserResponse)
 def update_user_status_by_id(user_id: int, user_status: UserStatusUpdate, db: Session = Depends(get_db)):
 
@@ -39,6 +42,7 @@ def update_user_status_by_id(user_id: int, user_status: UserStatusUpdate, db: Se
 
     return user
 
+# Delete user by ID
 @admin_router.delete("/user/delete/{user_id}", status_code=status.HTTP_200_OK)
 def delete_user_by_id(user_id: int, db: Session = Depends(get_db)):
 

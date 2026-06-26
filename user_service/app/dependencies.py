@@ -9,6 +9,7 @@ oauth2_scheme = OAuth2PasswordBearer(
 )
 
 
+# Dependency to get current user
 def get_current_user(
     token: str = Depends(oauth2_scheme)
 ):
@@ -40,6 +41,7 @@ def get_current_user(
         raise credentials_exception
 
 
+# Dependency to verify admin access
 def require_admin(
     current_user: dict = Depends(get_current_user)
 ):

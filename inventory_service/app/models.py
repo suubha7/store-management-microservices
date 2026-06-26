@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, DateTime, UniqueConstraint
 from datetime import datetime
 from app.database import Base
 
+# Inventory database model
 class Inventory(Base):
     __tablename__ = "inventory"
 

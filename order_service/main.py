@@ -1,3 +1,4 @@
+# Application entry point
 def main():
     print("Hello from order-service!")
 

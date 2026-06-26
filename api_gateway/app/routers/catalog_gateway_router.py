@@ -13,6 +13,7 @@ catalog_gateway_router = APIRouter(
 )
 
 
+# Forward HTTP request to service
 async def forward_request(request: Request, url: str):
     headers = {}
 
@@ -45,6 +46,7 @@ async def forward_request(request: Request, url: str):
     )
 
 
+# Retrieve all cities
 @catalog_gateway_router.get("/cities")
 async def get_cities(request: Request):
     return await forward_request(
@@ -53,6 +55,7 @@ async def get_cities(request: Request):
     )
 
 
+# Retrieve categories available in city
 @catalog_gateway_router.get("/cities/{city_id}/categories")
 async def get_categories_by_city(
     city_id: int,
@@ -64,6 +67,7 @@ async def get_categories_by_city(
     )
 
 
+# Retrieve products available in city
 @catalog_gateway_router.get("/cities/{city_id}/products")
 async def get_products_by_city(
     city_id: int,
@@ -75,6 +79,7 @@ async def get_products_by_city(
     )
 
 
+# Retrieve products in category
 @catalog_gateway_router.get(
     "/cities/{city_id}/products/category/{category_id}"
 )
@@ -89,6 +94,7 @@ async def get_products_by_category(
     )
 
 
+# Retrieve product details by ID
 @catalog_gateway_router.get("/products/{product_id}")
 async def get_product_by_id(
     product_id: int,

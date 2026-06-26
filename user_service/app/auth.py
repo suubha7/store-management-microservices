@@ -13,10 +13,12 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 password_hash = PasswordHash.recommended()
 
 
+# Hash password using bcrypt
 def hash_password(password: str) -> str:
     return password_hash.hash(password)
 
 
+# Verify password matches hash
 def verify_password(
     plain_password: str,
     hashed_password: str
@@ -26,6 +28,7 @@ def verify_password(
         hashed_password
     )
 
+# Generate a JWT access token
 def create_access_token(user_id: int, role: str):
 
     expiry_time = datetime.now(timezone.utc) + timedelta(minutes= ACCESS_TOKEN_EXPIRE_MINUTES)

@@ -13,6 +13,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Order Service")
 
 
+# Root check endpoint
 @app.get("/")
 def read_root():
     return {

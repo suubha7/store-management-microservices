@@ -13,6 +13,7 @@ USERS_SERVICE_URL = os.getenv("USERS_SERVICE_URL")
 user_gateway_router = APIRouter(prefix="/user", tags=["Users Gateway"])
 
 
+# Forward HTTP request to service
 async def forward_request(request: Request, url: str):
     headers = {}
 
@@ -46,6 +47,7 @@ async def forward_request(request: Request, url: str):
 
 
 
+# Register a new user
 @user_gateway_router.post("/register")
 async def register_user(user_data: UserRegisterRequest, request: Request):
     return await forward_request(
@@ -54,6 +56,7 @@ async def register_user(user_data: UserRegisterRequest, request: Request):
     )
 
 
+# Authenticate user credentials
 @user_gateway_router.post("/login")
 async def login_user(form_data: OAuth2PasswordRequestForm = Depends()):
     try:
@@ -80,6 +83,7 @@ async def login_user(form_data: OAuth2PasswordRequestForm = Depends()):
 
 
 
+# Retrieve profile of current user
 @user_gateway_router.get("/me", dependencies=[Depends(require_bearer_token)])
 async def get_my_profile(request: Request):
     return await forward_request(
@@ -88,6 +92,7 @@ async def get_my_profile(request: Request):
     )
 
 
+# Update current user profile
 @user_gateway_router.put("/me", dependencies=[Depends(require_bearer_token)])
 async def update_my_profile(user_data: UserUpdateRequest, request: Request):
     return await forward_request(
@@ -96,6 +101,7 @@ async def update_my_profile(user_data: UserUpdateRequest, request: Request):
     )
 
 
+# Change current user password
 @user_gateway_router.put("/me/password", dependencies=[Depends(require_bearer_token)])
 async def change_my_password(password_data: ChangePasswordRequest,request: Request):
     return await forward_request(

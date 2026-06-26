@@ -4,6 +4,7 @@ from datetime import datetime
 from app.database import Base
 
 
+# City database model
 class City(Base):
     __tablename__ = "cities"
 
@@ -13,6 +14,7 @@ class City(Base):
 
     city_products = relationship("CityProduct", back_populates="city")
 
+# Category database model
 class Category(Base):
     __tablename__ = "categories"
 
@@ -25,6 +27,7 @@ class Category(Base):
     products = relationship("Product", back_populates="category")
 
 
+# Product database model
 class Product(Base):
     __tablename__ = "products"
 
@@ -41,6 +44,7 @@ class Product(Base):
 
     city_products = relationship("CityProduct", back_populates="product")
 
+# City product mapping database model
 class CityProduct(Base):
     __tablename__ = "cityproducts"
 

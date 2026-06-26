@@ -4,6 +4,7 @@ from typing import List
 
 
 
+# Schema for order item response
 class OrderItemResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -15,6 +16,7 @@ class OrderItemResponse(BaseModel):
     subtotal: float
 
 
+# Schema for order response
 class OrderResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -27,5 +29,6 @@ class OrderResponse(BaseModel):
     updated_at: datetime
 
 
+# Schema for checkout response
 class CheckoutResponse(OrderResponse):
     order_items: List[OrderItemResponse]

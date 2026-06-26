@@ -8,6 +8,7 @@ from app.dependencies import require_admin
 
 product_router = APIRouter(prefix="/admin", tags=["Admin Products"], dependencies=[Depends(require_admin)])
 
+# Retrieve all products
 @product_router.get("/products",response_model=list[ProductResponse])
 def get_products(db: Session = Depends(get_db)):
     products = db.query(Product).all()
@@ -15,6 +16,7 @@ def get_products(db: Session = Depends(get_db)):
     return products
 
 
+# Retrieve product details by ID
 @product_router.get("/products/{product_id}",response_model=ProductResponse)
 def get_product_by_id(product_id: int, db: Session = Depends(get_db)):
     product = db.query(Product).filter(Product.id == product_id).first()
@@ -24,6 +26,7 @@ def get_product_by_id(product_id: int, db: Session = Depends(get_db)):
 
     return product
 
+# Create a new product
 @product_router.post("/products", response_model= ProductResponse, status_code=status.HTTP_201_CREATED)
 def create_product(product_data: ProductCreate, db: Session = Depends(get_db)):
 
@@ -41,6 +44,7 @@ def create_product(product_data: ProductCreate, db: Session = Depends(get_db)):
 
     return new_product
 
+# Update product details
 @product_router.put("/products/{product_id}", response_model= ProductResponse, status_code=status.HTTP_200_OK)
 def update_product_by_id(product_id: int, product_data: ProductUpdate, db: Session = Depends(get_db)):
 
@@ -62,6 +66,7 @@ def update_product_by_id(product_id: int, product_data: ProductUpdate, db: Sessi
 
     return product
      
+# Update product status
 @product_router.put("/products/{product_id}/status", response_model= ProductResponse, status_code=status.HTTP_200_OK)
 def update_product_status(product_id: int, product_data: ProductStatusUpdate, db: Session = Depends(get_db)):
 

@@ -8,6 +8,7 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Inventory Service")
 
+# Root check endpoint
 @app.get("/")
 def read_root():
 

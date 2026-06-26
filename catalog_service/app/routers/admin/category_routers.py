@@ -8,12 +8,14 @@ from app.schema.category import CategoryCreate, CategoryUpdate, CategoryResponse
 
 category_router = APIRouter(prefix="/admin", tags=["Admin Categories"], dependencies=[Depends(require_admin)])
 
+# Retrieve all categories
 @category_router.get("/categories", response_model=list[CategoryResponse])
 def get_categories(db: Session= Depends(get_db)):
     categories = db.query(Category).all()
 
     return categories
 
+# Retrieve category details by ID
 @category_router.get("/categories/{category_id}", response_model=CategoryResponse)
 def get_category_by_id(category_id: int, db: Session = Depends(get_db)):
 
@@ -24,6 +26,7 @@ def get_category_by_id(category_id: int, db: Session = Depends(get_db)):
 
     return category
 
+# Create a new category
 @category_router.post("/categories", response_model= CategoryResponse, status_code=status.HTTP_201_CREATED)
 def create_category(category_data: CategoryCreate, db: Session = Depends(get_db)):
 
@@ -41,6 +44,7 @@ def create_category(category_data: CategoryCreate, db: Session = Depends(get_db)
 
     return new_category
 
+# Update category details
 @category_router.put("/categories/{category_id}", response_model= CategoryResponse, status_code=status.HTTP_200_OK)
 def update_category_by_id(category_id: int, category_data: CategoryUpdate, db: Session = Depends(get_db)):
 
@@ -59,6 +63,7 @@ def update_category_by_id(category_id: int, category_data: CategoryUpdate, db: S
 
     return category
 
+# Update category status
 @category_router.put("/categories/{category_id}/status", response_model= CategoryResponse, status_code=status.HTTP_200_OK)
 def update_category_status(category_id: int, category_data: CategoryStatusUpdate, db: Session = Depends(get_db)):
 

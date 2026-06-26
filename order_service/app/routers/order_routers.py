@@ -25,6 +25,7 @@ INTERNAL_HEADERS = {"X-Internal-Service-Key": INTERNAL_SERVICE_KEY}
 order_router = APIRouter(prefix="/orders",tags=["Order APIs"],dependencies=[Depends(get_current_user)])
 
 
+# Process cart checkout
 @order_router.post("/checkout", response_model=CheckoutResponse, status_code=status.HTTP_201_CREATED)
 def checkout(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     user_id = int(current_user["user_id"])
@@ -177,6 +178,7 @@ def checkout(db: Session = Depends(get_db), current_user: dict = Depends(get_cur
     return new_order
 
 
+# Retrieve orders for current user
 @order_router.get("", response_model=list[OrderResponse])
 def get_my_orders(db: Session = Depends(get_db),current_user: dict = Depends(get_current_user)):
     user_id = int(current_user["user_id"])
@@ -186,6 +188,7 @@ def get_my_orders(db: Session = Depends(get_db),current_user: dict = Depends(get
     return orders
 
 
+# Retrieve order details by ID for current user
 @order_router.get("/{order_id}", response_model=CheckoutResponse)
 def get_my_order_by_id(order_id: int,db: Session = Depends(get_db),current_user: dict = Depends(get_current_user)):
     user_id = int(current_user["user_id"])

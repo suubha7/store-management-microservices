@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.database import Base
 
+# Cart item database model
 class CartItem(Base):
     __tablename__ = "cart_items"
 
@@ -24,6 +25,7 @@ class CartItem(Base):
         ),
     )
 
+# Order database model
 class Order(Base):
     __tablename__ = "orders"
 
@@ -42,6 +44,7 @@ class Order(Base):
         cascade="all, delete-orphan"
     )
 
+# Order item database model
 class OrderItem(Base):
     __tablename__ = "orderitems"
 

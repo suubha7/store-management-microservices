@@ -11,6 +11,7 @@ from app.dependencies import get_current_user
 
 user_router = APIRouter(prefix="/user", tags=["User APIs"])
 
+# Register a new user
 @user_router.post("/register",response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def register_user(user_data: UserRegister, db: Session = Depends(get_db)):
 
@@ -37,6 +38,7 @@ def register_user(user_data: UserRegister, db: Session = Depends(get_db)):
     return new_user
 
 
+# Authenticate user credentials
 @user_router.post("/login", response_model= TokenResponse)
 def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
 
@@ -64,6 +66,7 @@ def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = D
 
     return { "access_token": access_token, "token_type": "bearer", "role": user.role }
 
+# Retrieve profile of current user
 @user_router.get("/me", response_model=UserResponse, status_code=status.HTTP_200_OK)
 def get_my_profile(db: Session= Depends(get_db), current_user: dict = Depends(get_current_user)):
 
@@ -74,6 +77,7 @@ def get_my_profile(db: Session= Depends(get_db), current_user: dict = Depends(ge
     return user
 
 
+# Update current user profile
 @user_router.put("/me", response_model= UserResponse, status_code=status.HTTP_200_OK)
 def update_my_profile(user_data: UserUpdate, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
 
@@ -92,6 +96,7 @@ def update_my_profile(user_data: UserUpdate, db: Session = Depends(get_db), curr
 
     return user
 
+# Change current user password
 @user_router.put("/me/password", status_code=status.HTTP_200_OK)
 def change_my_password(password_data: ChangePasswordRequest, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
 

@@ -15,6 +15,7 @@ order_gateway_router = APIRouter(
 )
 
 
+# Forward HTTP request to service
 async def forward_request(request: Request, url: str):
     headers = {}
 
@@ -48,6 +49,7 @@ async def forward_request(request: Request, url: str):
 
 
 
+# Add a new item to cart
 @order_gateway_router.post("/cart/items")
 async def create_cart_item(item_data:CartItemCreateRequest, request: Request):
     return await forward_request(
@@ -56,6 +58,7 @@ async def create_cart_item(item_data:CartItemCreateRequest, request: Request):
     )
 
 
+# Retrieve items in current cart
 @order_gateway_router.get("/cart")
 async def get_cart_items(request: Request):
     return await forward_request(
@@ -64,6 +67,7 @@ async def get_cart_items(request: Request):
     )
 
 
+# Update quantity of cart item
 @order_gateway_router.put("/cart/items/{cart_item_id}")
 async def update_cart_item(
     cart_item_id: int,
@@ -76,6 +80,7 @@ async def update_cart_item(
     )
 
 
+# Remove item from cart
 @order_gateway_router.delete("/cart/items/{cart_item_id}")
 async def delete_cart_item(
     cart_item_id: int,
@@ -87,6 +92,7 @@ async def delete_cart_item(
     )
 
 
+# Remove all items from cart
 @order_gateway_router.delete("/cart/clear")
 async def clear_cart(request: Request):
     return await forward_request(
@@ -95,6 +101,7 @@ async def clear_cart(request: Request):
     )
 
 
+# Process cart checkout
 @order_gateway_router.post("/orders/checkout")
 async def checkout(request: Request):
     return await forward_request(
@@ -103,6 +110,7 @@ async def checkout(request: Request):
     )
 
 
+# Retrieve orders for current user
 @order_gateway_router.get("/orders")
 async def get_my_orders(request: Request):
     return await forward_request(
@@ -111,6 +119,7 @@ async def get_my_orders(request: Request):
     )
 
 
+# Retrieve order details by ID for current user
 @order_gateway_router.get("/orders/{order_id}")
 async def get_my_order_by_id(
     order_id: int,

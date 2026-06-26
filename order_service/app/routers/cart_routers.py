@@ -11,6 +11,7 @@ from app.schema.cart_schema import CartItemCreate, CartItemUpdate, CartItemRespo
 cart_router = APIRouter(prefix="/cart", tags=["Cart APIs"],dependencies=[Depends(get_current_user)])
 
 
+# Add a new item to cart
 @cart_router.post("/items", response_model=CartItemResponse, status_code=status.HTTP_201_CREATED)
 def create_cart_item(cart_data: CartItemCreate, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     user_id = int(current_user["user_id"])
@@ -46,6 +47,7 @@ def create_cart_item(cart_data: CartItemCreate, db: Session = Depends(get_db), c
     return new_cart_item
 
 
+# Retrieve items in current cart
 @cart_router.get("", response_model=list[CartItemResponse])
 def get_cart_items(db: Session = Depends(get_db),current_user: dict = Depends(get_current_user)):
     user_id = int(current_user["user_id"])
@@ -55,6 +57,7 @@ def get_cart_items(db: Session = Depends(get_db),current_user: dict = Depends(ge
     return cart_items
 
 
+# Update quantity of cart item
 @cart_router.put("/items/{cart_item_id}",response_model=CartItemResponse)
 def update_cart_item(
     cart_item_id: int,
@@ -77,6 +80,7 @@ def update_cart_item(
     return cart_item
 
 
+# Remove item from cart
 @cart_router.delete("/items/{cart_item_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_cart_item(
     cart_item_id: int,
@@ -94,6 +98,7 @@ def delete_cart_item(
     db.commit()
 
 
+# Remove all items from cart
 @cart_router.delete("/clear",status_code=status.HTTP_204_NO_CONTENT)
 def clear_cart(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     user_id = int(current_user["user_id"])

@@ -8,12 +8,14 @@ from app.dependencies import require_admin
 
 city_router = APIRouter(prefix="/admin", tags=["Admin Cities"], dependencies=[Depends(require_admin)])
 
+# Retrieve all cities
 @city_router.get("/cities", response_model=list[CityResponse])
 def get_cities(db: Session = Depends(get_db)):
     cities = db.query(City).all()
 
     return cities
 
+# Retrieve city details by ID
 @city_router.get("/cities/{city_id}", response_model=CityResponse)
 def get_city_by_id(city_id: int, db: Session = Depends(get_db)):
 
@@ -23,6 +25,7 @@ def get_city_by_id(city_id: int, db: Session = Depends(get_db)):
     
     return city
 
+# Create a new city
 @city_router.post("/city", response_model= CityResponse, status_code=status.HTTP_201_CREATED)
 def create_city(city_data: CityCreate, db: Session = Depends(get_db)):
 
@@ -41,6 +44,7 @@ def create_city(city_data: CityCreate, db: Session = Depends(get_db)):
     return new_city
 
     
+# Update city status
 @city_router.put("/city/{city_id}/status", response_model= CityResponse, status_code=status.HTTP_200_OK)
 def update_city_status(city_id: int, city_data: CityStatusUpdate, db: Session = Depends(get_db)):
 

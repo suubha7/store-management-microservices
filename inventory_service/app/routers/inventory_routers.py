@@ -7,12 +7,14 @@ from app.dependencies import require_admin
 
 inventory_router = APIRouter(prefix="/admin", tags=["Admin Inventory APIs"], dependencies=[Depends(require_admin)])
 
+# Retrieve all inventory records
 @inventory_router.get("/inventories", response_model=list[InventoryResponse], status_code=status.HTTP_200_OK)
 def get_inventories(db: Session= Depends(get_db)):
     inventories = db.query(Inventory).all()
 
     return inventories
 
+# Create inventory for product
 @inventory_router.post("/inventories", response_model=InventoryResponse, status_code=status.HTTP_201_CREATED)
 def create_inventory(inventory_data: CreateInventory, db: Session = Depends(get_db)):
 
@@ -30,6 +32,7 @@ def create_inventory(inventory_data: CreateInventory, db: Session = Depends(get_
 
     return new_inventory
 
+# Retrieve inventory record by ID
 @inventory_router.get("/inventories/{inventory_id}", response_model=InventoryResponse)
 def get_inventory_by_id(inventory_id: int, db: Session = Depends(get_db)):
     
@@ -40,6 +43,7 @@ def get_inventory_by_id(inventory_id: int, db: Session = Depends(get_db)):
 
     return inventory
 
+# Update product stock quantity
 @inventory_router.put("/inventories/{inventory_id}",response_model=InventoryResponse, status_code=status.HTTP_200_OK)
 def update_inventory_stock(inventory_id: int, inventory_data: InventoryStockUpdate, db: Session = Depends(get_db)):
     
@@ -55,6 +59,7 @@ def update_inventory_stock(inventory_id: int, inventory_data: InventoryStockUpda
 
     return inventory
 
+# Delete inventory record
 @inventory_router.delete("/inventories/{inventory_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_inventory(inventory_id: int, db: Session = Depends(get_db)):
     inventory = db.query(Inventory).filter(Inventory.id == inventory_id).first()

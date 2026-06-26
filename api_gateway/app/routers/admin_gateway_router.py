@@ -27,6 +27,7 @@ admin_gateway_router = APIRouter(
 )
 
 
+# Forward HTTP request to service
 async def forward_request(request: Request, url: str):
     headers = {}
 
@@ -59,6 +60,7 @@ async def forward_request(request: Request, url: str):
     )
 
 
+# Retrieve all registered users
 @admin_gateway_router.get("/users")
 async def get_all_users(request: Request):
     return await forward_request(
@@ -67,6 +69,7 @@ async def get_all_users(request: Request):
     )
 
 
+# Retrieve user details by ID
 @admin_gateway_router.get("/users/{user_id}")
 async def get_user_by_id(user_id: int, request: Request):
     return await forward_request(
@@ -75,6 +78,7 @@ async def get_user_by_id(user_id: int, request: Request):
     )
 
 
+# Update user status
 @admin_gateway_router.put("/users/{user_id}/status")
 async def update_user_status(user_id: int,user_data: UserStatusUpdateRequest, request: Request):
     return await forward_request(
@@ -83,6 +87,7 @@ async def update_user_status(user_id: int,user_data: UserStatusUpdateRequest, re
     )
 
 
+# Delete user account
 @admin_gateway_router.delete("/users/{user_id}")
 async def delete_user(user_id: int, request: Request):
     return await forward_request(
@@ -91,6 +96,7 @@ async def delete_user(user_id: int, request: Request):
     )
 
 
+# Retrieve all cities
 @admin_gateway_router.get("/catalog/cities")
 async def get_cities(request: Request):
     return await forward_request(
@@ -99,6 +105,7 @@ async def get_cities(request: Request):
     )
 
 
+# Retrieve city details by ID
 @admin_gateway_router.get("/catalog/cities/{city_id}")
 async def get_city_by_id(city_id: int, request: Request):
     return await forward_request(
@@ -107,6 +114,7 @@ async def get_city_by_id(city_id: int, request: Request):
     )
 
 
+# Create a new city
 @admin_gateway_router.post("/catalog/city")
 async def create_city(city_date: CityCreateRequest,request: Request):
     return await forward_request(
@@ -115,6 +123,7 @@ async def create_city(city_date: CityCreateRequest,request: Request):
     )
 
 
+# Update city status
 @admin_gateway_router.put("/catalog/city/{city_id}/status")
 async def update_city_status(city_id: int, city_data: CityStatusUpdateRequest, request: Request):
     return await forward_request(
@@ -123,6 +132,7 @@ async def update_city_status(city_id: int, city_data: CityStatusUpdateRequest, r
     )
 
 
+# Retrieve all categories
 @admin_gateway_router.get("/catalog/categories")
 async def get_categories(request: Request):
     return await forward_request(
@@ -131,6 +141,7 @@ async def get_categories(request: Request):
     )
 
 
+# Retrieve category details by ID
 @admin_gateway_router.get("/catalog/categories/{category_id}")
 async def get_category_by_id(category_id: int, request: Request):
     return await forward_request(
@@ -139,6 +150,7 @@ async def get_category_by_id(category_id: int, request: Request):
     )
 
 
+# Create a new category
 @admin_gateway_router.post("/catalog/categories")
 async def create_category(catalog_data: CategoryCreateRequest, request: Request):
     return await forward_request(
@@ -147,6 +159,7 @@ async def create_category(catalog_data: CategoryCreateRequest, request: Request)
     )
 
 
+# Update category details
 @admin_gateway_router.put("/catalog/categories/{category_id}")
 async def update_category(category_id: int, catalog_data: CategoryUpdateRequest, request: Request):
     return await forward_request(
@@ -155,6 +168,7 @@ async def update_category(category_id: int, catalog_data: CategoryUpdateRequest,
     )
 
 
+# Update category status
 @admin_gateway_router.put("/catalog/categories/{category_id}/status")
 async def update_category_status(category_id: int, catalog_data: CategoryStatusUpdateRequest, request: Request):
     return await forward_request(
@@ -163,6 +177,7 @@ async def update_category_status(category_id: int, catalog_data: CategoryStatusU
     )
 
 
+# Retrieve all products
 @admin_gateway_router.get("/catalog/products")
 async def get_products(request: Request):
     return await forward_request(
@@ -171,6 +186,7 @@ async def get_products(request: Request):
     )
 
 
+# Retrieve product details by ID
 @admin_gateway_router.get("/catalog/products/{product_id}")
 async def get_product_by_id(product_id: int, request: Request):
     return await forward_request(
@@ -179,6 +195,7 @@ async def get_product_by_id(product_id: int, request: Request):
     )
 
 
+# Create a new product
 @admin_gateway_router.post("/catalog/products")
 async def create_product(product_data: ProductCreateRequest, request: Request):
     return await forward_request(
@@ -187,6 +204,7 @@ async def create_product(product_data: ProductCreateRequest, request: Request):
     )
 
 
+# Update product details
 @admin_gateway_router.put("/catalog/products/{product_id}")
 async def update_product(product_id: int, product_data: ProductUpdateRequest, request: Request):
     return await forward_request(
@@ -195,6 +213,7 @@ async def update_product(product_id: int, product_data: ProductUpdateRequest, re
     )
 
 
+# Update product status
 @admin_gateway_router.put("/catalog/products/{product_id}/status")
 async def update_product_status(product_id: int, product_data: ProductStatusUpdateRequest, request: Request):
     return await forward_request(
@@ -204,6 +223,7 @@ async def update_product_status(product_id: int, product_data: ProductStatusUpda
 
 
 
+# Retrieve all city product mappings
 @admin_gateway_router.get("/catalog/city-products")
 async def get_city_products(request: Request):
     return await forward_request(
@@ -212,6 +232,7 @@ async def get_city_products(request: Request):
     )
 
 
+# Retrieve city product details by ID
 @admin_gateway_router.get("/catalog/city-products/{city_product_id}")
 async def get_city_product_by_id(
     city_product_id: int,
@@ -223,6 +244,7 @@ async def get_city_product_by_id(
     )
 
 
+# Map a product to a city
 @admin_gateway_router.post("/catalog/city-products")
 async def create_city_product(cityproduct_data: CityProductCreateRequest, request: Request):
     return await forward_request(
@@ -231,6 +253,7 @@ async def create_city_product(cityproduct_data: CityProductCreateRequest, reques
     )
 
 
+# Update product availability in city
 @admin_gateway_router.put("/catalog/city-products/{city_product_id}/availability")
 async def update_city_product_availability(
     city_product_id: int,
@@ -243,6 +266,7 @@ async def update_city_product_availability(
     )
 
 
+# Delete city product mapping
 @admin_gateway_router.delete("/catalog/city-products/{city_product_id}")
 async def delete_city_product(
     city_product_id: int,
@@ -255,6 +279,7 @@ async def delete_city_product(
 
 
 
+# Retrieve all inventory records
 @admin_gateway_router.get("/inventory/inventories")
 async def get_inventories(request: Request):
     return await forward_request(
@@ -263,6 +288,7 @@ async def get_inventories(request: Request):
     )
 
 
+# Create inventory for product
 @admin_gateway_router.post("/inventory/inventories")
 async def create_inventory(inventory_data:CreateInventoryRequest, request: Request):
     return await forward_request(
@@ -271,6 +297,7 @@ async def create_inventory(inventory_data:CreateInventoryRequest, request: Reque
     )
 
 
+# Retrieve inventory record by ID
 @admin_gateway_router.get("/inventory/inventories/{inventory_id}")
 async def get_inventory_by_id(
     inventory_id: int,
@@ -282,6 +309,7 @@ async def get_inventory_by_id(
     )
 
 
+# Update inventory record
 @admin_gateway_router.put("/inventory/inventories/{inventory_id}")
 async def update_inventory(
     inventory_id: int,
@@ -294,6 +322,7 @@ async def update_inventory(
     )
 
 
+# Delete inventory record
 @admin_gateway_router.delete("/inventory/inventories/{inventory_id}")
 async def delete_inventory(
     inventory_id: int,
@@ -306,6 +335,7 @@ async def delete_inventory(
 
 
 
+# Retrieve all orders
 @admin_gateway_router.get("/orders")
 async def get_all_orders(request: Request):
     return await forward_request(
@@ -314,6 +344,7 @@ async def get_all_orders(request: Request):
     )
 
 
+# Retrieve order details by ID
 @admin_gateway_router.get("/orders/{order_id}")
 async def get_order_by_id(
     order_id: int,

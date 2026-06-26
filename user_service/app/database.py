@@ -14,6 +14,7 @@ SessionUser = sessionmaker(autocommit= False, autoflush= False, bind= engine)
 
 Base = declarative_base()
 
+# Get database session dependency
 def get_db():
     db = SessionUser()
     try:

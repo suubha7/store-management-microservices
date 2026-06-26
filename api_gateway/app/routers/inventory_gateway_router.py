@@ -13,6 +13,7 @@ inventory_gateway_router = APIRouter(
 )
 
 
+# Forward HTTP request to service
 async def forward_request(
     request: Request,
     url: str
@@ -48,6 +49,7 @@ async def forward_request(
     )
 
 
+# Forward check stock request
 @inventory_gateway_router.post("/check-stock")
 async def forward_check_stock(
     request: Request
@@ -58,6 +60,7 @@ async def forward_check_stock(
     )
 
 
+# Forward reduce stock request
 @inventory_gateway_router.post("/reduce-stock")
 async def forward_reduce_stock(
     request: Request

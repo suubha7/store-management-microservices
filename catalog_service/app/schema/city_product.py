@@ -3,15 +3,18 @@ from typing import Optional
 from datetime import datetime
 
 
+# Schema for creating a city product mapping
 class CityProductCreate(BaseModel):
     city_id: int = Field(gt=0)
     product_id: int = Field(gt=0)
 
 
+# Schema for updating city product availability
 class CityProductAvailabilityUpdate(BaseModel):
     is_available: bool
 
 
+# Schema for city product response
 class CityProductResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

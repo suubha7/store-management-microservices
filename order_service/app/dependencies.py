@@ -13,6 +13,7 @@ ALGORITHM = os.getenv("ALGORITHM")
 security = HTTPBearer()
 
 
+# Dependency to get current user
 def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security)
 ):
@@ -46,6 +47,7 @@ def get_current_user(
         )
 
 
+# Dependency to verify admin access
 def require_admin(
     current_user: dict = Depends(get_current_user)
 ):

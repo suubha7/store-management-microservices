@@ -7,6 +7,7 @@ security = HTTPBearer(
 )
 
 
+# Dependency to validate token
 def require_bearer_token(
     credentials: HTTPAuthorizationCredentials = Depends(security)
 ):

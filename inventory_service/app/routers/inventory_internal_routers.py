@@ -14,6 +14,7 @@ inventory_internal_router = APIRouter(
 )
 
 
+# Check product stock level
 @inventory_internal_router.post("/check-stock", response_model=StockResponse,status_code=status.HTTP_200_OK)
 def check_stock(stock_data: StockRequest, db: Session = Depends(get_db)):
     inventory = db.query(Inventory).filter(
@@ -32,6 +33,7 @@ def check_stock(stock_data: StockRequest, db: Session = Depends(get_db)):
     }
 
 
+# Reduce product stock quantity
 @inventory_internal_router.post("/reduce-stock", response_model=StockResponse, status_code=status.HTTP_200_OK)
 def reduce_stock(stock_data: StockRequest, db: Session = Depends(get_db)):
     inventory = db.query(Inventory).filter(

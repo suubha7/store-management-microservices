@@ -10,6 +10,7 @@ from app.schema.order_schema import OrderResponse, CheckoutResponse
 admin_order_router = APIRouter(prefix="/admin",tags=["Admin Order APIs"],dependencies=[Depends(require_admin)])
 
 
+# Retrieve all orders
 @admin_order_router.get("/orders", response_model=list[OrderResponse])
 def get_all_orders(db: Session = Depends(get_db)):
     orders = db.query(Order).all()
@@ -17,6 +18,7 @@ def get_all_orders(db: Session = Depends(get_db)):
     return orders
 
 
+# Retrieve order details by ID
 @admin_order_router.get("/orders/{order_id}", response_model=CheckoutResponse)
 def get_order_by_id(order_id: int, db: Session = Depends(get_db)):
     order = db.query(Order).filter(Order.id == order_id).first()
