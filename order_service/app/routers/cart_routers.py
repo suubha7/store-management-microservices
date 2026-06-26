@@ -15,6 +15,13 @@ cart_router = APIRouter(prefix="/cart", tags=["Cart APIs"],dependencies=[Depends
 def create_cart_item(cart_data: CartItemCreate, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     user_id = int(current_user["user_id"])
 
+    # Check whether the cart already contains items
+    existing_cart = db.query(CartItem).filter(CartItem.user_id == user_id).first()
+
+    if existing_cart:
+        if existing_cart.city_id != cart_data.city_id:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Your cart contains items from another city. Please clear the cart first.")
+
     existing_cart_item = db.query(CartItem).filter(CartItem.user_id == user_id, CartItem.product_id == cart_data.product_id).first()
 
     if existing_cart_item:
@@ -28,6 +35,7 @@ def create_cart_item(cart_data: CartItemCreate, db: Session = Depends(get_db), c
     new_cart_item = CartItem(
         user_id=user_id,
         product_id=cart_data.product_id,
+        city_id=cart_data.city_id,
         quantity=cart_data.quantity
     )
 

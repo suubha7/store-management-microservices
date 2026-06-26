@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from app.database import get_db
 from app.models import CartItem, Order, OrderItem
 from app.dependencies import get_current_user
-from app.schema.order_schema import CheckoutRequest, OrderResponse, CheckoutResponse
+from app.schema.order_schema import OrderResponse, CheckoutResponse
 
 
 load_dotenv()
@@ -26,7 +26,7 @@ order_router = APIRouter(prefix="/orders",tags=["Order APIs"],dependencies=[Depe
 
 
 @order_router.post("/checkout", response_model=CheckoutResponse, status_code=status.HTTP_201_CREATED)
-def checkout(checkout_data: CheckoutRequest, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+def checkout(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     user_id = int(current_user["user_id"])
 
     cart_items = db.query(CartItem).filter(CartItem.user_id == user_id).all()
@@ -34,6 +34,14 @@ def checkout(checkout_data: CheckoutRequest, db: Session = Depends(get_db), curr
     if not cart_items:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Cart is empty")
 
+    city_id = cart_items[0].city_id
+    for item in cart_items:
+        if item.city_id != city_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Cart contains items from multiple cities."
+            )
+    
     product_details = []
     total_amount = 0.0
 
@@ -70,7 +78,7 @@ def checkout(checkout_data: CheckoutRequest, db: Session = Depends(get_db), curr
             )
 
         stock_request_data = {
-            "city_id": checkout_data.city_id,
+            "city_id": city_id,
             "product_id": cart_item.product_id,
             "quantity": cart_item.quantity
         }
@@ -125,7 +133,7 @@ def checkout(checkout_data: CheckoutRequest, db: Session = Depends(get_db), curr
             reduce_stock_response = httpx.post(
                 f"{INVENTORY_SERVICE_URL}/inventory/reduce-stock",
                 json={
-                    "city_id": checkout_data.city_id,
+                    "city_id": city_id,
                     "product_id": product["product_id"],
                     "quantity": product["quantity"]
                 },
@@ -144,7 +152,7 @@ def checkout(checkout_data: CheckoutRequest, db: Session = Depends(get_db), curr
         if reduce_stock_response.status_code != status.HTTP_200_OK:
             raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Could not reduce inventory stock")
 
-    new_order = Order(user_id=user_id, city_id=checkout_data.city_id, total_amount=total_amount, status="pending")
+    new_order = Order(user_id=user_id, city_id= city_id, total_amount=total_amount, status="pending")
 
     db.add(new_order)
     db.flush()

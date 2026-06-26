@@ -3,9 +3,6 @@ from datetime import datetime
 from typing import List
 
 
-class CheckoutRequest(BaseModel):
-    city_id: int = Field(gt=0)
-
 
 class OrderItemResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)

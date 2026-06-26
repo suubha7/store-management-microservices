@@ -3,7 +3,7 @@ import httpx
 from dotenv import load_dotenv
 from fastapi import APIRouter, Request, Response, HTTPException, status, Depends
 from app.dependencies import require_bearer_token
-from app.schema.order_schema import CartItemCreateRequest, CartItemUpdateRequest, CheckoutRequest
+from app.schema.order_schema import CartItemCreateRequest, CartItemUpdateRequest
 
 load_dotenv()
 
@@ -96,7 +96,7 @@ async def clear_cart(request: Request):
 
 
 @order_gateway_router.post("/orders/checkout")
-async def checkout(checkout_data: CheckoutRequest, request: Request):
+async def checkout(request: Request):
     return await forward_request(
         request,
         f"{ORDER_SERVICE_URL}/orders/checkout"

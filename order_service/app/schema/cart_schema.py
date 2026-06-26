@@ -5,6 +5,7 @@ from datetime import datetime
 class CartItemCreate(BaseModel):
     product_id: int = Field(gt=0)
     quantity: int = Field(gt=0)
+    city: int = Field(gt=0)
 
 
 class CartItemUpdate(BaseModel):

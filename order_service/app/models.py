@@ -9,6 +9,7 @@ class CartItem(Base):
     id = Column(Integer, primary_key= True, index= True)
     user_id = Column(Integer, nullable= False)
     product_id = Column(Integer, nullable= False)
+    city_id = Column(Integer, nullable=False)
     quantity = Column(Integer, default= 1)
     
     created_at = Column(DateTime, default= datetime.now)
@@ -18,6 +19,7 @@ class CartItem(Base):
         UniqueConstraint(
             "user_id",
             "product_id",
+            "city_id",
             name="unique_user_product_cart"
         ),
     )
