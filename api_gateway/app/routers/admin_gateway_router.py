@@ -11,6 +11,7 @@ from app.schema.catalog_schema import (
     ProductCreateRequest, ProductUpdateRequest, ProductStatusUpdateRequest
 )
 from app.schema.inventory_schema import CreateInventoryRequest, InventoryStockUpdateRequest
+from app.schema.user_schema import UserStatusUpdateRequest
 
 load_dotenv()
 
@@ -75,7 +76,7 @@ async def get_user_by_id(user_id: int, request: Request):
 
 
 @admin_gateway_router.put("/users/{user_id}/status")
-async def update_user_status(user_id: int, request: Request):
+async def update_user_status(user_id: int,user_data: UserStatusUpdateRequest, request: Request):
     return await forward_request(
         request,
         f"{USERS_SERVICE_URL}/admin/user/update_status/{user_id}"

@@ -21,3 +21,6 @@ class UserStatusUpdateRequest(BaseModel):
 class ChangePasswordRequest(BaseModel):
     current_password: str = Field(min_length=6, max_length=50)
     new_password: str = Field(min_length=6, max_length=50)
+
+class UserStatusUpdateRequest(BaseModel):
+    is_active: bool
