@@ -15,11 +15,9 @@ class CityProductAvailabilityUpdate(BaseModel):
 
 
 # Schema for city product response
-class CityProductResponse(BaseModel):
+class CityProductResponse(CityProductCreate):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    city_id: int
-    product_id: int
     is_available: bool
     created_at: datetime

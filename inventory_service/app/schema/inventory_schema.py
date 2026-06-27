@@ -14,12 +14,8 @@ class InventoryStockUpdate(BaseModel):
     stock_quantity: int = Field(ge=0)
 
 # Schema for inventory response
-class InventoryResponse(BaseModel):
+class InventoryResponse(CreateInventory):
     model_config = ConfigDict(from_attributes= True)
-
-    city_id: int
-    product_id: int 
-    stock_quantity: int
 
     created_at: datetime
     updated_at: datetime

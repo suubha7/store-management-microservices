@@ -60,6 +60,8 @@ def update_product_by_id(product_id: int, product_data: ProductUpdate, db: Sessi
         product.price = product_data.price
     if product_data.category_id != None:
         product.category_id = product_data.category_id
+    if product_data.image_url != None:
+        product.image_url = product_data.image_url
 
     db.commit()
     db.refresh(product)

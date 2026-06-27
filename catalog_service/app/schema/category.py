@@ -20,11 +20,9 @@ class CategoryStatusUpdate(BaseModel):
     is_active: bool
 
 # Schema for category response
-class CategoryResponse(BaseModel):
+class CategoryResponse(CategoryCreate):
     model_config = ConfigDict(from_attributes=True)
 
     id: int 
-    name: str
-    description: str
     is_active: bool
     created_at: datetime

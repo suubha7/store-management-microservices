@@ -10,6 +10,7 @@ class ProductCreate(BaseModel):
     description: str = Field(min_length=2, max_length=100)
     price: float = Field(ge=0)
     category_id: int = Field(gt=0)
+    image_url: str | None = None
 
 # Schema for updating a product
 class ProductUpdate(BaseModel):
@@ -18,19 +19,16 @@ class ProductUpdate(BaseModel):
     description: Optional[str] = Field(default=None, min_length=2, max_length=100)
     price: Optional[float] = Field(default=None, ge=0)
     category_id: Optional[int] = Field(default=None, gt=0)
+    image_url: Optional[str] = Field(default=None, min_length=2)
 
 # Schema for updating product status
 class ProductStatusUpdate(BaseModel):
     is_active: bool
 
 # Schema for product response
-class ProductResponse(BaseModel):
+class ProductResponse(ProductCreate):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    name: str
-    description: str
-    price: float
-    category_id: int
     is_active: bool
     created_at: datetime
