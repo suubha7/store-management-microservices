@@ -12,3 +12,4 @@ test.py
 users.db
 .python-version
 .env
+*.db
